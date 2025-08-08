@@ -6,10 +6,11 @@
 
 - [HTML + CSS intro](HTML+CSS/1-HTML-CSS-intro.pdf)
 - [HTML Part 1](HTML+CSS/2-HTML-1.pdf)
+- [HTML + CSS Examples (zip file)](HTML+CSS/html-css-examples.zip)
 
 ### Week 2
 
-- [CSS Part 1](HTML+CSS/3-CSS-Part-1.pdf)
+- [CSS Part 1](HTML+CSS/3-CSS-1.pdf)
 - [HTML Part 2](HTML+CSS/4-HTML-2.pdf)
 
 ### Week 3
