@@ -22,7 +22,7 @@
 ### Week 4
 
 - [Javascript vs Python Syntax Cheatsheet](https://medium.com/geekculture/javascript-vs-python-syntax-cheatsheet-9bc7c59599c6)
-  [Programming environment](https://github.com/ilkkamtk/JavaScript-english/blob/main/ohjelmointiymparisto.md)
+- [Programming environment](https://github.com/ilkkamtk/JavaScript-english/blob/main/ohjelmointiymparisto.md)
 - [Interactive programs](https://github.com/ilkkamtk/JavaScript-english/blob/main/vuorovaikutteiset_ohjelmat.md)
 - [Conditional expressions and loops](valinta-toistorakenteet.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-1-interactive-programs--conditional-expressions-and-loops)
