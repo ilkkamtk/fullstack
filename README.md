@@ -5,16 +5,16 @@
 ### Week 1
 
 - [HTML + CSS intro](HTML+CSS/1-HTML-CSS-intro.pdf)
-- [HTML Part 1](HTML+CSS/2-HTML-Part-1.pdf)
+- [HTML Part 1](HTML+CSS/2-HTML-1.pdf)
 
 ### Week 2
 
 - [CSS Part 1](HTML+CSS/3-CSS-Part-1.pdf)
-- [HTML Part 2](HTML+CSS/4-HTML-Part-2.pdf)
+- [HTML Part 2](HTML+CSS/4-HTML-2.pdf)
 
 ### Week 3
 
-- [CSS Part 2](HTML+CSS/5-CSS-Part-2.pdf)
+- [CSS Part 2](HTML+CSS/5-CSS-2.pdf)
 - Images in web
 - [HTML Assignment](https://github.com/ilkkamtk/html-css-assignment)
 
