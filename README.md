@@ -55,7 +55,8 @@
 
 ### Week 10
 
-- Python + Flask
+- [Server side programming](https://github.com/ilkkamtk/WSK/blob/main/Week3/01-server-side-programming.md)
+- [Python + Flask](week10/python+flask.md)
 
 ### Week 11
 
