@@ -16,29 +16,31 @@
 ### Week 3
 
 - [CSS Part 2](HTML+CSS/5-CSS-2.pdf)
-- Images in web
+- [Images in web](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Formats/Image_types)
 - [HTML Assignment](https://github.com/ilkkamtk/html-css-assignment)
 
 ### Week 4
 
-- JS Module 0
-- JS Module 1
-- Assignments
+- [Javascript vs Python Syntax Cheatsheet](https://medium.com/geekculture/javascript-vs-python-syntax-cheatsheet-9bc7c59599c6)
+  [Programming environment](https://github.com/ilkkamtk/JavaScript-english/blob/main/ohjelmointiymparisto.md)
+- [Interactive programs](https://github.com/ilkkamtk/JavaScript-english/blob/main/vuorovaikutteiset_ohjelmat.md)
+- [Conditional expressions and loops](valinta-toistorakenteet.md)
+- [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-1-interactive-programs--conditional-expressions-and-loops)
 
 ### Week 5
 
-- JS Module 2
-- Assignments
+- [Arrays and functions](taulukot-funktiot.md)
+- [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-2-arrays-and-functions)
 
 ### Week 6
 
-- JS Module 3
-- Assignments
+- [BOM, DOM and events](BOM-DOM-event.md)
+- [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-3-bom-dom-and-events)
 
 ### Week 7
 
-- JS Module 4
-- Assignments
+- [Open APIs and AJAX](apit-ajax.md)
+- [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-4-ajax)
 
 ### Week 8
 
@@ -48,8 +50,8 @@
 
 ### Week 9
 
-- JS - Arrow functions, special operators, destructuring, modules
-- JS - Array methods, foreach, map, filter reduce
+- [JS - Arrow functions, special operators, destructuring, modules](https://github.com/ilkkamtk/WSK/blob/main/Week2/AdvancedJavaScript1.md)
+- [JS - Array methods, foreach, map, filter reduce](https://github.com/ilkkamtk/WSK/blob/main/Week2/AdvancedJavascript2.md)
 
 ### Week 10
 
