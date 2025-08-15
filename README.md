@@ -41,10 +41,12 @@
 
 - [Open APIs and AJAX](apit-ajax.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-4-ajax)
+- Frontend exam
 
 ### Week 8
 
-- Frontend exam
+- Frontend 1st resit exam
+- Frontend 2nd resit exam
 
 ## Backend
 
@@ -80,7 +82,9 @@
 
 - Security
 - Deployment
+- Backend Exam
 
 ### Week 16
 
-- Backend Exam
+- Backend 1st resit exam
+- Backend 2nd resit exam
