@@ -24,22 +24,22 @@
 - [Javascript vs Python Syntax Cheatsheet](https://medium.com/geekculture/javascript-vs-python-syntax-cheatsheet-9bc7c59599c6)
 - [Programming environment](https://github.com/ilkkamtk/JavaScript-english/blob/main/ohjelmointiymparisto.md)
 - [Interactive programs](https://github.com/ilkkamtk/JavaScript-english/blob/main/vuorovaikutteiset_ohjelmat.md)
-- [Conditional expressions and loops](valinta-toistorakenteet.md)
+- [Conditional expressions and loops](https://github.com/ilkkamtk/JavaScript-english/blob/main/valinta-toistorakenteet.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-1-interactive-programs--conditional-expressions-and-loops)
 
 ### Week 5
 
-- [Arrays and functions](taulukot-funktiot.md)
+- [Arrays and functions](https://github.com/ilkkamtk/JavaScript-english/blob/main/taulukot-funktiot.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-2-arrays-and-functions)
 
 ### Week 6
 
-- [BOM, DOM and events](BOM-DOM-event.md)
+- [BOM, DOM and events](https://github.com/ilkkamtk/JavaScript-english/blob/main/BOM-DOM-event.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-3-bom-dom-and-events)
 
 ### Week 7
 
-- [Open APIs and AJAX](apit-ajax.md)
+- [Open APIs and AJAX](https://github.com/ilkkamtk/JavaScript-english/blob/main/apit-ajax.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-4-ajax)
 - Frontend exam
 
