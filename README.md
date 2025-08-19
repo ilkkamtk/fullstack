@@ -6,6 +6,7 @@
 
 - [HTML + CSS intro](HTML+CSS/1-HTML-CSS-intro.pdf)
 - [HTML Part 1](HTML+CSS/2-HTML-1.pdf)
+- [Git](git.md)
 - [HTML + CSS Examples (zip file)](HTML+CSS/html-css-examples.zip)
 
 ### Week 2
