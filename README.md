@@ -32,60 +32,58 @@
 
 - [Arrays and functions](https://github.com/ilkkamtk/JavaScript-english/blob/main/taulukot-funktiot.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-2-arrays-and-functions)
-
-### Week 6
-
 - [BOM, DOM and events](https://github.com/ilkkamtk/JavaScript-english/blob/main/BOM-DOM-event.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-3-bom-dom-and-events)
 
-### Week 7
+### Week 6
 
 - [Open APIs and AJAX](https://github.com/ilkkamtk/JavaScript-english/blob/main/apit-ajax.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-4-ajax)
-- Frontend exam
 
-### Week 8
-
-- Frontend 1st resit exam
-- Frontend 2nd resit exam
-
-## Backend
-
-### Week 9
+### Week 7
 
 - [JS - Arrow functions, special operators, destructuring, modules](https://github.com/ilkkamtk/WSK/blob/main/Week2/AdvancedJavaScript1.md)
 - [JS - Array methods, foreach, map, filter reduce](https://github.com/ilkkamtk/WSK/blob/main/Week2/AdvancedJavascript2.md)
 
-### Week 10
+## Backend
 
+### Week 8
 - [Server side programming](https://github.com/ilkkamtk/WSK/blob/main/Week3/01-server-side-programming.md)
 - [Python + Flask](week10/python+flask.md)
 
-### Week 11
+
+
+### Week 9
 
 - Flask + Blueprint
 
-### Week 12
+### Week 10
 
 - MongoDB
 - MongoDB with PyMongo
 
-### Week 13
+### Week 11
 
 - App state + auth
 
-### Week 14
+### Week 12
 
 - Input validation server
 - Input validation client
 
-### Week 15
+### Week 13
 
 - Security
 - Deployment
-- Backend Exam
+
+### Week 14
+
+- Project
+
+### Week 15
+
+- Project
 
 ### Week 16
 
-- Backend 1st resit exam
-- Backend 2nd resit exam
+- Project
