@@ -33,8 +33,8 @@
 - [Arrays and functions](https://github.com/ilkkamtk/JavaScript-english/blob/main/taulukot-funktiot.md)
 - [Assignments](https://github.com/ilkkamtk/JavaScript-english/blob/main/assignments.md#module-2-arrays-and-functions)
 - [BOM, DOM and events](https://github.com/ilkkamtk/JavaScript-english/blob/main/BOM-DOM-event.md)
-- [Assignments DOM](https://github.com/ilkkamtk/web-ohjelmoinnin-perusteet/blob/main/JS-recap3.md#assignments)
-- [Assignments Events](https://github.com/ilkkamtk/web-ohjelmoinnin-perusteet/blob/main/JS-recap4.md#assignments)
+- [Assignments DOM](https://github.com/ilkkamtk/web-ohjelmoinnin-perusteet/blob/main/JS-recap3.md#assignments), Note: at home Metropolia VPN is needed
+- [Assignments Events](https://github.com/ilkkamtk/web-ohjelmoinnin-perusteet/blob/main/JS-recap4.md#assignments), Note: at home Metropolia VPN is needed
 
 ### Week 6
 
