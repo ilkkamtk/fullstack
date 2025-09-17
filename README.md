@@ -39,7 +39,7 @@
 ### Week 6
 
 - [Open APIs and AJAX](https://github.com/ilkkamtk/JavaScript-english/blob/main/apit-ajax.md)
-- [Assignments](https://github.com/ilkkamtk/web-ohjelmoinnin-perusteet/blob/main/JS-recap5.md#assignments)
+- [Assignments](https://github.com/ilkkamtk/web-ohjelmoinnin-perusteet/blob/main/JS-recap5.md#assignments), Note: at home Metropolia VPN is needed
 
 ### Week 7
 
