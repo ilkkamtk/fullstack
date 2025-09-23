@@ -240,16 +240,3 @@ In the labs we are going to build a REST API with Flask. The API will serve JSON
 11. Commit and push branch `Assignment1` to the remote repository.
 12. Merge `Assignment1` into `main` and push `main`.
 13. Deploy the project to a server (e.g., [Azure](https://www.youtube.com/playlist?list=PLKenVLUxjmH_1obN-sz7KvOcBHbRuTdiO), [Metropolia ecloud](./ecloud-installation.md) and test that it works. For production, consider running with a WSGI server like Gunicorn behind a reverse proxy.
-
-### Tip: ProxyFix for deployment behind a reverse proxy
-
-If you deploy behind Apache/Nginx (especially under a path like `/appname`), add ProxyFix so Flask generates correct URLs:
-
-```bash
-pip install Werkzeug
-```
-
-```python
-from werkzeug.middleware.proxy_fix import ProxyFix
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_prefix=1)
-```
