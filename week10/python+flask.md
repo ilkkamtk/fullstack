@@ -8,7 +8,7 @@ Flask provides routing, request/response handling, templating (Jinja2), and stat
 
 ## Installation and setup
 
--[Flask installation with VScode and tutorial](https://code.visualstudio.com/docs/python/tutorial-flask)
+- [Flask installation with VScode and tutorial](https://code.visualstudio.com/docs/python/tutorial-flask)
 
 Minimal Flask app (`app.py`):
 
@@ -171,8 +171,7 @@ Why ProxyFix is needed:
 - URL generation: Ensure `url_for(...)` and redirects include your app prefix (e.g., `/appname`) via `X-Forwarded-Prefix`.
 - Cleaner routing: With trailing-slash proxy mapping, your Flask routes can remain at `/` instead of duplicating the prefix.
 
-
-Install (Werkzeug ships with Flask; if missing, install explicitly):
+_Install (**Werkzeug ships with Flask**; no need to install; if missing for some reason, install explicitly):_
 
 ```bash
 pip install Werkzeug
@@ -203,7 +202,7 @@ RequestHeader set X-Forwarded-Prefix "/appname"
 
 ## Assignment
 
-In the labs we are going to build a REST API with Flask. The API will serve JSON data and static files. [Example API documentation here](https://media.edu.metropolia.fi/cats/docs/) (Metropolia network / VPN only).
+In the labs we are going to build a REST API with Flask. The API will serve JSON data and static files. [Example API documentation here](X) (Metropolia network / VPN only).
 
 1. Create a new project folder for this week's assignments and initialize a new Git repository.
 2. Add a `.gitignore` file. Exclude `.venv/`, `__pycache__/`, and `.env`. You can use [gitignore.io](https://www.toptal.com/developers/gitignore) to generate Python ignores.
