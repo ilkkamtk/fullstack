@@ -134,8 +134,8 @@ Note: We use the RockyLinux LAMP template primarily for its preinstalled Apache.
 
       # Reverse proxy to Flask app (adjust path/port as needed)
       ProxyPreserveHost On
-      ProxyPass /appname http://127.0.0.1:5000/
-      ProxyPassReverse /appname http://127.0.0.1:5000/
+      ProxyPass /appname/ http://127.0.0.1:5000/
+      ProxyPassReverse /appname/ http://127.0.0.1:5000/
 
       # Forward headers to help Flask generate correct URLs behind proxy
       RequestHeader set X-Forwarded-Proto "https"

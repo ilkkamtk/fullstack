@@ -161,6 +161,46 @@ Access in code via `os.getenv("SECRET_KEY")`.
 
 ---
 
+### Running behind a reverse proxy or subpath (ProxyFix)
+
+If you deploy Flask behind a reverse proxy (e.g., Apache/Nginx) or under a subpath (like `/appname`), use Werkzeug's ProxyFix so Flask respects proxy headers for scheme/host and an optional URL prefix.
+
+Why ProxyFix is needed:
+
+- HTTPS: Ensure redirects and absolute URLs use `https` when TLS terminates at the proxy via `X-Forwarded-Proto`.
+- URL generation: Ensure `url_for(...)` and redirects include your app prefix (e.g., `/appname`) via `X-Forwarded-Prefix`.
+- Cleaner routing: With trailing-slash proxy mapping, your Flask routes can remain at `/` instead of duplicating the prefix.
+
+
+Install (Werkzeug ships with Flask; if missing, install explicitly):
+
+```bash
+pip install Werkzeug
+```
+
+```python
+from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
+
+app = Flask(__name__)
+
+# Trust one proxy in front. Adjust x_proto/x_prefix as needed.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_prefix=1)
+
+@app.get("/")
+def index():
+    return "Hello from Flask behind a proxy"
+```
+
+Note: When proxying under a prefix, use trailing-slash mapping so the prefix is stripped before hitting Flask, and set the headers:
+
+```apache
+ProxyPass /appname/ http://127.0.0.1:5000/
+ProxyPassReverse /appname/ http://127.0.0.1:5000/
+RequestHeader set X-Forwarded-Proto "https"
+RequestHeader set X-Forwarded-Prefix "/appname"
+```
+
 ## Assignment
 
 In the labs we are going to build a REST API with Flask. The API will serve JSON data and static files. [Example API documentation here](https://media.edu.metropolia.fi/cats/docs/) (Metropolia network / VPN only).
@@ -191,3 +231,16 @@ In the labs we are going to build a REST API with Flask. The API will serve JSON
 11. Commit and push branch `Assignment1` to the remote repository.
 12. Merge `Assignment1` into `main` and push `main`.
 13. Deploy the project to a server (e.g., [Azure](https://www.youtube.com/playlist?list=PLKenVLUxjmH_1obN-sz7KvOcBHbRuTdiO), [Metropolia ecloud](./ecloud-installation.md) and test that it works. For production, consider running with a WSGI server like Gunicorn behind a reverse proxy.
+
+### Tip: ProxyFix for deployment behind a reverse proxy
+
+If you deploy behind Apache/Nginx (especially under a path like `/appname`), add ProxyFix so Flask generates correct URLs:
+
+```bash
+pip install Werkzeug
+```
+
+```python
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_prefix=1)
+```
