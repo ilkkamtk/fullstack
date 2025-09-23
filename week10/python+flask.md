@@ -8,17 +8,7 @@ Flask provides routing, request/response handling, templating (Jinja2), and stat
 
 ## Installation and setup
 
-Use a virtual environment and install Flask (and python-dotenv for .env loading).
-
-```bash
-# macOS/zsh
-python3 -m venv .venv
-source .venv/bin/activate
-
-pip install Flask python-dotenv
-# optional: save dependencies
-pip freeze > requirements.txt
-```
+-[Flask installation with VScode and tutorial](https://code.visualstudio.com/docs/python/tutorial-flask)
 
 Minimal Flask app (`app.py`):
 
@@ -182,7 +172,7 @@ In the labs we are going to build a REST API with Flask. The API will serve JSON
 5. Optional but recommended: set up Python code style tools (e.g., Black, Ruff) and EditorConfig.
 6. Create a new Flask project based on the "Hello world" example above.
    - create and activate a virtual environment
-   - install dependencies: `pip install Flask python-dotenv`
+   - install dependencies: `python -m pip install Flask python-dotenv`
    - create `app.py` and add the minimal Flask code
    - run with auto-reload using the Flask CLI: `flask run --host 127.0.0.1 --port 3000`
 7. Create an endpoint that returns a cat object in JSON at `GET /api/v1/cat` with properties:
@@ -190,8 +180,9 @@ In the labs we are going to build a REST API with Flask. The API will serve JSON
    - `name`: string
    - `birthdate`: string
    - `weight`: number
-   - `owner`: string
-   - `image`: string, URL to an image (e.g., `https://loremflickr.com/320/240/cat`)
+   - `owner`: number
+   - `image`: string, URL to an image (e.g., `https://place-hold.it/320x240&text=Cat`)
+     Assign any values you like.
 8. Test the application:
    - run the server
    - open a browser and navigate to `http://localhost:3000/api/v1/cat`
