@@ -117,6 +117,16 @@ def get_with_query():
     abort(404)
 ```
 
+When to use route vs query parameters
+
+- Route parameters (path variables) are best when the value uniquely identifies a resource or subresource and is required. Examples: `/users/123`, `/users/123/pets/5`. These form the canonical URL, are easy to cache, and naturally return 404 if not found.
+- Query parameters are best for optional inputs like filtering, searching, sorting, and pagination. Examples: `/users?role=admin&page=2&limit=50`, `/users/123/orders?status=shipped`.
+- Combine both when appropriate: identify the resource in the path, then refine with query params.
+- Flask tips:
+  - Use converters in routes to validate/convert types (e.g., `<int:id>`, `<path:slug>`).
+  - For query params, cast with `request.args.get("page", type=int)` and provide defaults.
+  - Prefer path params for primary identifiers over putting IDs in the query string.
+
 ### Reading JSON request body
 
 ```python
