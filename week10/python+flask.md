@@ -162,12 +162,16 @@ load_dotenv()  # reads .env into environment
 Example `.env`:
 
 ```dotenv
-FLASK_APP=app.py
-FLASK_ENV=development
-SECRET_KEY=change-me
+FLASK_RELOADER=True
+FLASK_DEBUG=True
 ```
 
-Access in code via `os.getenv("SECRET_KEY")`.
+Access in code via `os.getenv("VAR_NAME")`:
+
+```python
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=3000, debug=os.getenv("FLASK_DEBUG"), use_reloader=os.getenv("FLASK_RELOADER"))
+```
 
 ---
 

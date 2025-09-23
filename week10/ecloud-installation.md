@@ -182,13 +182,20 @@ Note: We use the RockyLinux LAMP template primarily for its preinstalled Apache.
       pip3 install -r requirements.txt
       ```
 
-   5. Run your application (development server example; for production consider Gunicorn + systemd):
+   5. Create `.env` file in the project root with the following content to disable reloader and debug mode so that the app can run in the background:
+
+      ```dotenv
+      FLASK_RELOADER=False
+      FLASK_DEBUG=False
+      ```
+
+   6. Run your application (development server example; for production consider Gunicorn + systemd):
 
       ```bash
       python3 app.py &
       ```
 
-   6. Now you should be able to access your application at:
+   7. Now you should be able to access your application at:
 
       ```text
       https://<your-server-ip>/appname/
