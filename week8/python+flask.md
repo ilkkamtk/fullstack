@@ -243,4 +243,4 @@ In the labs we are going to build a REST API with Flask. The API will serve JSON
 10. Freeze dependencies: `pip freeze > requirements.txt`.
 11. Commit and push branch `Assignment1` to the remote repository.
 12. Merge `Assignment1` into `main` and push `main`.
-13. Deploy the project to a server (e.g., [Azure](https://www.youtube.com/playlist?list=PLKenVLUxjmH_1obN-sz7KvOcBHbRuTdiO), [Metropolia ecloud](./ecloud-installation.md) and test that it works. For production, consider running with a WSGI server like Gunicorn behind a reverse proxy.
+13. Deploy the project to a server (e.g., [Azure](https://www.youtube.com/playlist?list=PLKenVLUxjmH_1obN-sz7KvOcBHbRuTdiO), [Metropolia ecloud](./ecloud-installation.md) and test that it works.
