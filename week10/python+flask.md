@@ -229,11 +229,11 @@ In the labs we are going to build a REST API with Flask. The API will serve JSON
    - create `app.py` and add the minimal Flask code
    - run with auto-reload using the Flask CLI: `flask run --host 127.0.0.1 --port 3000`
 7. Create an endpoint that returns a cat object in JSON at `GET /api/v1/cat` with properties:
-   - `cat_id`: number
+   - `cat_id`: string (eventually a MongoDB ObjectId)
    - `name`: string
    - `birthdate`: string
    - `weight`: number
-   - `owner`: number
+   - `owner`: string (eventually a MongoDB ObjectId)
    - `image`: string, URL to an image (e.g., `https://place-hold.it/320x240&text=Cat`)
      Assign any values you like.
 8. Test the application:
