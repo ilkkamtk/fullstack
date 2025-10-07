@@ -38,7 +38,7 @@ flask run --host 127.0.0.1 --port 3000
 ## Main features
 
 - Static file server (built-in)
-- Routing with decorators (@app.get/@app.post/@app.put/@app.delete)
+- Routing with [decorators](https://www.geeksforgeeks.org/python/python-decorators-a-complete-guide/) (@app.get/@app.post/@app.put/@app.delete)
 - Jinja2 template engine (optional)
 - Easy JSON responses (return dict or use jsonify)
 
