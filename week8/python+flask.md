@@ -216,7 +216,7 @@ RequestHeader set X-Forwarded-Prefix "/appname"
 
 ## Assignment
 
-In the labs we are going to build a REST API with Flask. The API will serve JSON data and static files. [Example API documentation here](X) (Metropolia network / VPN only).
+In the labs we are going to build a REST API with Flask. The API will serve JSON data and static files. [Example API documentation here](https://media3.edu.metropolia.fi/rest/docs/) (Metropolia network / VPN only).
 
 1. Create a new project folder for this week's assignments and initialize a new Git repository.
 2. Add a `.gitignore` file. Exclude `.venv/`, `__pycache__/`, and `.env`. You can use [gitignore.io](https://www.toptal.com/developers/gitignore) to generate Python ignores.
