@@ -240,7 +240,7 @@ In the labs we are going to build a REST API with Flask. The API will serve JSON
    - run the server
    - open a browser and navigate to `http://localhost:3000/api/v1/cat`
 9. Create a folder `public` and add an image file. Serve it by configuring Flask with `static_folder="public"` and `static_url_path="/public"` and verify at `http://localhost:3000/public/your-image.jpg`.
-10. Freeze dependencies: `pip freeze > requirements.txt`.
+10. Freeze dependencies: `pip list --not-required --format freeze > requirements.txt`.
 11. Commit and push branch `Assignment1` to the remote repository.
 12. Merge `Assignment1` into `main` and push `main`.
 13. Deploy the project to a virtual computer on [Metropolia ecloud](./ecloud-installation.md) and test that it works.
