@@ -197,7 +197,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
 
-# Trust one proxy in front. Adjust x_proto/x_prefix as needed.
+# If you want your app to work anywhere but localhost or root folder, add this:
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_prefix=1)
 
 @app.get("/")
