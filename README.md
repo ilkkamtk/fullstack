@@ -64,7 +64,8 @@
 
 ### Week 11
 
-- App state + auth
+- Authentication and Authorization with decorators
+- File upload handling
 
 ### Week 12
 
@@ -73,7 +74,7 @@
 
 ### Week 13
 
-- Security
+- Security best practices
 - Deployment
 
 ### Week 14
