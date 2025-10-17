@@ -55,12 +55,12 @@
 
 ### Week 9
 
-- Flask + Blueprint
+- [Flask blueprints](week9/blueprints.md)
 
 ### Week 10
 
-- MongoDB
-- MongoDB with PyMongo
+- [MongoDB](week10/MongoDB.md)
+- [MongoEngine](week10/MongoEngine.md)
 
 ### Week 11
 
