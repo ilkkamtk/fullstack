@@ -1,4 +1,4 @@
-# NoSQL MongoDB database and mongoose
+# NoSQL MongoDB database
 
 Patrick Ausderau / Ilkka Kylmäniemi
 
@@ -117,11 +117,13 @@ Patrick Ausderau / Ilkka Kylmäniemi
 ### Assignment 1
 
 - Create a free MongoDB Atlas cluster (video walkthrough: <https://youtu.be/YfyKoMNavs4>)
+- Install
 - Install MongoDB Database Tools (mongodump, mongorestore, mongoexport, mongoimport): <https://www.mongodb.com/docs/database-tools/>
 
   - add the path to your system PATH so you can run the tools from any terminal:
 
     - windows: search "environment variables" in start menu, edit system environment variables, Environment Variables -> select Path under System variables -> Edit -> New -> add the path to the bin folder of the tools
+
     - macOS/Linux: add `export PATH=<path-to-tools-bin>:$PATH` to your shell profile file (`~/.zshrc`):
 
     ```bash
@@ -140,17 +142,10 @@ Patrick Ausderau / Ilkka Kylmäniemi
   ```
 
 - Browse the database in MongoDB Atlas
-- Database has three collections: `categories`, `species`, and `animals`
-  - `categories` contains the categories of species
-  - `species` contains the species and they belong to a category
-  - `animals` contains the animals and they belong to a species; animals also include a GeoJSON `location` and a `birthdate`
-- 'Pike' species has a placeholder image; replace it with a real image URL from Wikipedia: `https://upload.wikimedia.org/wikipedia/commons/c/c6/Hecht_im_Sundh%C3%A4user_See.jpg`
-- Here is a practical application that uses a similar database: [Animal App](https://ilkkamtk.github.io/) (Metropolia network / VPN only).
-
-Security tip (Atlas):
-
-- Create a database user (not your Atlas login)
-- Restrict IP access to your current IP, and never commit credentials to Git
+- Database has two collections: `users` and `cats`
+  - `users` contains user information
+  - `cats` contains cat information, including name, owner, birthdate, weight and a GeoJSON location
+- One cat has a placeholder image; replace it with a real image URL from Wikipedia: `https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/1920px-Cat_August_2010-4.jpg`
 
 ---
 
@@ -165,7 +160,7 @@ Security tip (Atlas):
 
 ### Assignment 2
 
-- Install MongoDB Shell: <https://www.mongodb.com/docs/mongodb-shell/>
+- Install MongoDB Shell: <https://www.mongodb.com/docs/mongodb-shell/> and add it to your system PATH like with the Database Tools above
 - Connect to your Atlas cluster:
 
   ```bash
@@ -173,30 +168,30 @@ Security tip (Atlas):
   ```
 
 - [Basic commands](https://www.mongodb.com/docs/mongodb-shell/run-commands/)
-- Select database: `use animalsdb`, show all databases: `show dbs`
+- Select database: `use catsdb`, show all databases: `show dbs`
 - [Perform CRUD operations](https://www.mongodb.com/docs/mongodb-shell/crud/)
 
-1. Select all documents from the `species` collection
-2. Select all documents from the `animals` collection
+1. Select all documents from the `cats` collection
+2. Select all documents from the `users` collection
 
 - [Query and Projection Operators](https://www.mongodb.com/docs/manual/reference/mql/query-predicates/#std-label-query-projection-operators-top)
 - [Date](https://www.mongodb.com/docs/manual/reference/method/Date/#insert-and-return-isodate-objects)
 
-1. Select all animals born before 2020
-2. Select all animals born in 2023
+1. Select all cats born before 2020
+2. Select all cats born in 2023
 
 - [Geospatial queries](https://www.mongodb.com/docs/manual/geospatial-queries/)
 
-Prerequisite: ensure a 2dsphere index on the GeoJSON field (here we use `animals.location`). Run once:
+Prerequisite: ensure a 2dsphere index on the GeoJSON field (here we use `cats.location`). Run once:
 
 ```javascript
-db.animals.createIndex({ location: '2dsphere' });
+db.cats.createIndex({ location: '2dsphere' });
 ```
 
-1. Find all animals within the following bounding region (approx. Africa). Use a Polygon with these corner coordinates (Longitude, Latitude):
+1. Find all cats within the following bounding region (approx. Africa). Use a Polygon with these corner coordinates (Longitude, Latitude):
 
    ```javascript
-   db.animals.find({
+   db.cats.find({
      location: {
        $geoWithin: {
          $geometry: {
@@ -216,10 +211,10 @@ db.animals.createIndex({ location: '2dsphere' });
    });
    ```
 
-2. Find all animals within 100 km of Helsinki:
+2. Find all cats within 100 km of Helsinki:
 
    ```javascript
-   db.animals.find({
+   db.cats.find({
      location: {
        $near: {
          $geometry: { type: 'Point', coordinates: [24.9384, 60.1695] },
@@ -229,7 +224,7 @@ db.animals.createIndex({ location: '2dsphere' });
    });
    ```
 
-3. Find all animals in France. Use [geojson.io](https://geojson.io/) to draw a polygon around France and use those coordinates in a `$geoWithin: { $geometry: { type: "Polygon", coordinates: [...] } }` query. Ensure the polygon is closed (first and last coordinates the same).
+3. Find all cats in France. Use [geojson.io](https://geojson.io/) to draw a polygon around France and use those coordinates in a `$geoWithin: { $geometry: { type: "Polygon", coordinates: [...] } }` query. Ensure the polygon is closed (first and last coordinates the same).
 
 ---
 
@@ -237,10 +232,10 @@ db.animals.createIndex({ location: '2dsphere' });
 
 - [Aggregation](https://www.mongodb.com/docs/manual/aggregation/) operations process data records and return computed results
 - Aggregation operations group values from multiple documents together and can perform a variety of operations on the grouped data to return a single result
-- Example: Calculate the average age of animals
+- Example: Calculate the average age of cats
 
   ```javascript
-  db.animals.aggregate([
+  db.cats.aggregate([
     {
       $group: {
         _id: null,
@@ -261,26 +256,26 @@ db.animals.createIndex({ location: '2dsphere' });
      - `avgAgeMs`: Calculates the average age in milliseconds.
   2. Second stage - `$project`
      - `avgAgeYears`: Converts milliseconds to years by dividing by the number of milliseconds in a year.
-- Example, get all species and their categories. Show only the species name and category name:
+- Example, get all cats and their owners. Show only the cat name and owner name:
 
   ```javascript
-  db.species.aggregate([
+  db.cats.aggregate([
     {
       $lookup: {
-        from: 'categories',
-        localField: 'category',
+        from: 'owners',
+        localField: 'owner',
         foreignField: '_id',
-        as: 'category',
+        as: 'owner_info',
       },
     },
     {
-      $unwind: '$category',
+      $unwind: '$owner_info',
     },
     {
       $project: {
         _id: 1,
-        species_name: 1,
-        category_name: '$category.category_name',
+        cat_name: 1,
+        owner_name: '$owner_info.name',
       },
     },
   ]);
@@ -290,12 +285,12 @@ db.animals.createIndex({ location: '2dsphere' });
 
 ## Assignment 3
 
-- Select all cats from the `animals` collection and include species data using the aggregation pipeline (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>):
+- Select all cats from the `cats` collection and include owner data using the aggregation pipeline (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>):
   (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>)
-  - Use `$lookup` to perform left outer join between `animals` and `species` (as `species_info`).
-  - `$unwind` the `species_info` array.
-  - `$match` documents where `species_info.species_name` is "Cat".
-  - `$project` fields you want to show from animals and the joined species.
+  - Use `$lookup` to perform left outer join between `cats` and `owners` (as `owner_info`).
+  - `$unwind` the `owner_info` array.
+  - `$match` documents where `owner_info.name` is "John".
+  - `$project` fields you want to show from cats and the joined owners.
 
 ---
 
@@ -305,7 +300,7 @@ Submit the queries you used in MongoDB shell to Oma. Don't submit any files, jus
 
 ---
 
-### Extra: Local installation
+### Optional: Local installation
 
 - Install Community Edition: <https://www.mongodb.com/docs/manual/installation/>
 - Shell access: <https://www.mongodb.com/docs/mongodb-shell/> (optionally a UI like [Studio 3T](https://studio3t.com/download-studio3t-free))
