@@ -369,6 +369,43 @@ results = list(cursor)
 # results -> [{'id': ..., 'cat_name': ..., 'owner_name': ...}, ...]
 ```
 
+---
+
+## Assignment
+
+1. Create a new branch Assignment5 from main. Make sure you have merged previous assignments.
+2. Create a database connection module as shown above to `utils/db.py`.
+3. Create User and Cat models as shown above in `api/models/users_model.py` and `api/v1/cats/cats_model.py`. Replace models from previous assignments with these.
+   - Cat model should have fields:
+     - cat_name, string, required
+     - birthdate (datetime, required),
+     - weight (number, required),
+     - location (PointField, required),
+     - owner (Reference to User, required),
+     - attributes (dict, optional).
+   - User model should have fields:
+     - username (string, required, unique)
+     - email (string, required, unique)
+     - password (string, required)
+     - role (string, required, default "user", choices: "user", "admin").
+     - created_at (datetime, default now).
+       - created_at field should use a callable, e.g. `default=lambda: datetime.datetime.now(tz=datetime.timezone.utc)`.
+4. Modify controllers and routes of Users and Cats to use the updated models if needed.
+5. Test the endpoints with Postman or similar tool.
+   - Create a new user.
+   - Create a new cat with reference to the created user.
+   - List all cats.
+   - Get a cat by id.
+   - Modify a cat.
+   - Delete a cat.
+   - Get cats by owner id.
+   - Get cats in an area (polygon).
+   - Do the same for users, exept for area search.
+   - Create additional cats and owners as needed.
+6. JSON returned from GET endpoints are not plain dicts/lists, so you need to use Marshmallow for serialization. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
+
+---
+
 ## Marshmallow
 
 - [Marshmallow](https://marshmallow.readthedocs.io/en/stable/) is a popular library for object serialization/deserialization and validation in Python.
@@ -449,44 +486,6 @@ cats = Cat.objects().select_related().only("cat_name", "owner__username")
 
 - Note the double underscore `__` to access fields of the referenced document.
 
-## Assignment
-
-1. Create a new branch Assignment5 from main. Make sure you have merged previous assignments.
-2. Create a database connection module as shown above to `utils/db.py`.
-3. Create User and Cat models as shown above in `api/models/users_model.py` and `api/v1/cats/cats_model.py`. Replace models from previous assignments with these.
-   - Cat model should have fields:
-     - cat_name, string, required
-     - birthdate (datetime, required),
-     - weight (number, required),
-     - location (PointField, required),
-     - owner (Reference to User, required),
-     - attributes (dict, optional).
-   - User model should have fields:
-     - username (string, required, unique)
-     - email (string, required, unique)
-     - password (string, required)
-     - role (string, required, default "user", choices: "user", "admin").
-     - created_at (datetime, default now).
-       - created_at field should use a callable, e.g. `default=lambda: datetime.datetime.now(tz=datetime.timezone.utc)`.
-4. Modify controllers and routes of Users and Cats to use the updated models if needed.
-5. Test the endpoints with Postman or similar tool.
-   - Create a new user.
-   - Create a new cat with reference to the created user.
-   - List all cats.
-   - Get a cat by id.
-   - Modify a cat.
-   - Delete a cat.
-   - Get cats by owner id.
-   - Get cats in an area (polygon).
-   - Do the same for users, exept for area search.
-   - Create additional cats and owners as needed.
-   - Test the reverse lookup to get all cats for a user.
-6. JSON returned from GET endpoints are not plain dicts/lists, so you need to use Marshmallow for serialization. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
-7. Modify the controllers to use the schemas for serialization as shown above.
-8. If owner field in Cat returns only the ObjectId. Modify the GET endpoints to populate the owner field using `select_related()` as shown above.
-
----
-
 ## Reverse lookup
 
 - Reverse lookup means finding documents that reference a specific document.
@@ -502,7 +501,7 @@ class User(Document):
 
    @property
    def cats(self):
-        from ..api.v1.cats.cats_model import Cat
+        from api.v1.cats.cats_model import Cat
         return Cat.objects(owner=self)
 ```
 
@@ -512,29 +511,22 @@ Schema:
 from marshmallow import ModelSchema, fields
 
 class UserSchema(ModelSchema):
-    # use a lazy callable to avoid importing CatSchema at module import time
-    cats = fields.Nested(lambda: CatSchema(), many=True)
+    # use a nested schema to avoid circular imports
+    cats = fields.Nested('api.v1.cats.cats_schema.CatSchema', many=True)
 
     class Meta:
         model = User
         fields = ("id", "username", "email", "cats")
 ```
 
-- Lazy callable is a technique to avoid circular imports by delaying the import of `CatSchema` until it is actually needed. How does python find CatSchema even its not imported at the top of the file? Because the lambda function is called only when the schema is being used, not when the module is imported. Avoiding importing CatSchema at the top prevents circular import issues.
-
-Controller:
-
-```python
-def get_user_cats(user_id):
-    user = User.objects.get(id=user_id)
-    cats = user.cats
-    return jsonify(cats)
-```
+- The `fields.Nested` allows for the inclusion of related documents in the serialized output. This means when you serialize a User, it will also include a list of Cats owned by that User. Import cannot be in the top of the file to avoid circular import issues.
 
 ## Assignment continued
 
-1. Extend the User model with a property method `cats` that returns all Cats owned by the User.
-2. Extend the UserSchema to include the nested cats owned by the user.
-3. Create a new endpoint in Users controller to get a user by id along with their cats.
-4. Test the endpoint to ensure it returns the user data along with their cats.
-5. When done, merge the changes to main or create a pull request to main branch for review.
+1. Modify the controllers to use the schemas for serialization as shown above.
+2. If owner field in Cat returns only the ObjectId. Modify the GET endpoints to populate the owner field using `select_related()` as shown above.
+3. Extend the User model with a property method `cats` that returns all Cats owned by the User.
+4. Extend the UserSchema to include the nested cats owned by the user.
+5. Create a new endpoint in Users controller to get a user by id along with their cats.
+6. Test the endpoint to ensure it returns the user data along with their cats.
+7. When done, merge the changes to main or create a pull request to main branch for review.
