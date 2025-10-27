@@ -453,7 +453,7 @@ def get_cat_by_id(cat_id):
      - role (string, required, default "user", choices: "user", "admin").
      - created_at (datetime, default now).
        - created_at field should use a callable, e.g. `default=lambda: datetime.datetime.now(tz=datetime.timezone.utc)`.
-4. Modify controllers of Users and Cats to use the updated models if needed.
+4. Modify controllers and routes of Users and Cats to use the updated models if needed.
 5. Test the endpoints with Postman or similar tool.
    - Create a new user.
    - Create a new cat with reference to the created user.
