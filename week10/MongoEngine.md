@@ -381,7 +381,8 @@ results = list(cursor)
 - User schema (note: without password):
 
 ```python
-from marshmallow_mongoengine import ModelSchema, fields
+from marshmallow_mongoengine import ModelSchema
+from api.models.users_model import User
 
 class UserSchema(ModelSchema):
     class Meta:
