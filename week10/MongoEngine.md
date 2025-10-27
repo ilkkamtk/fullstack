@@ -253,6 +253,7 @@ def create_cat():
 ```
 
 - Note `**data` passes the dictionary’s contents as parameters to the `Cat` constructor. It is equivalent to `Cat(cat_name=data["cat_name"], birthdate=data["birthdate"], ...)`.
+- Calling `to_json()` on the queryset or document converts it to JSON string but it may not be ideal for complex nested documents or references. See Marshmallow section below for better serialization. Also mime type is currently not set to `application/json`, which is also corrected when using schemas.
 
 ---
 
