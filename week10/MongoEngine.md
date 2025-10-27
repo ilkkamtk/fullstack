@@ -216,14 +216,14 @@ class User(Document):
 
 ```python
 from mongoengine import Document, StringField, DateTimeField, ReferenceField, PointField, ValidationError, FloatField, DictField
-import datetime
+from api.models.users_model import User
 
 class Cat(Document):
     cat_name = StringField(required=True, min_length=2)
     birthdate = DateTimeField(required=True)
     weight = FloatField(required=True)
     location = PointField(required=True)
-    owner = ReferenceField("User", required=True)
+    owner = ReferenceField(User, required=True)
     attributes = DictField()
 ```
 
@@ -469,10 +469,10 @@ class User(Document):
 Schema:
 
 ```python
-from marshmallow import ModelSchema, fields
+from marshmallow_mongoengine import ModelSchema, fields
+from api.models.users_model import User
 
 class UserSchema(ModelSchema):
-    # use a nested schema to avoid circular imports
     cats = fields.Nested('api.v1.cats.cats_schema.CatSchema', many=True)
 
     class Meta:
@@ -480,7 +480,7 @@ class UserSchema(ModelSchema):
         fields = ("id", "username", "email", "cats")
 ```
 
-- The `fields.Nested` allows for the inclusion of related documents in the serialized output. This means when you serialize a User, it will also include a list of Cats owned by that User. Import cannot be in the top of the file to avoid circular import issues.
+- The `fields.Nested` allows for the inclusion of related documents in the serialized output. This means when you serialize a User, it will also include a list of Cats owned by that User.
 
 ## Assignment continued
 
