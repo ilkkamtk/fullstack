@@ -233,8 +233,6 @@ class Cat(Document):
 
 ## Exposing models via controllers/routes
 
-### Example: Get all Cats
-
 ```python
 # imports...
 
@@ -242,7 +240,7 @@ cats_bp = Blueprint("cats", __name__)
 @cats_bp.route("/", methods=["GET"])
 def get_all_cats():
     cats = Cat.objects()
-    return jsonify(cats), 200
+    return cats.to_json(), 200
 
 ### Example: Create a new Cat (assuming that the JSON body matches the Cat schema):
 @cats_bp.route("/", methods=["POST"])
@@ -250,7 +248,7 @@ def create_cat():
     data = request.get_json()
     new_cat = Cat(**data)
     new_cat.save()
-    return jsonify(new_cat), 201
+    return {"message": "Cat created successfully"}, 201
 
 ```
 
@@ -279,7 +277,7 @@ Endpoint:
 @cat_bp.route("/owner/<owner_id>", methods=["GET"])
 def get_by_owner(owner_id):
     cats = Cat.find_by_owner(owner_id)
-    return jsonify(cats)
+    return cats.to_json(), 200
 ```
 
 ### Cats in an Area (Polygon)
@@ -300,7 +298,7 @@ Endpoint:
 def cats_in_area():
     polygon = request.get_json()["coordinates"][0]
     cats = Cat.find_by_area(polygon)
-    return jsonify(cats)
+    return cats.to_json(), 200
 ```
 
 Example request body:
@@ -463,9 +461,9 @@ def get_cat_by_id(cat_id):
    - Modify a cat.
    - Delete a cat.
    - Create additional cats and owners and test querying by area.
-   - Do the same for users
+   - Do the same for users.
 6. If owner field in Cat returns only the ObjectId. Modify the GET endpoints to populate the owner field using `select_related()` as shown above.
-7. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
+7. JSON returned from GET endpoints are not plain dicts/lists, so you need to use Marshmallow for serialization. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
 8. Modify the controllers to use the schemas for serialization as shown above.
 
 ---
