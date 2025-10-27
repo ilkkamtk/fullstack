@@ -394,7 +394,7 @@ class UserSchema(ModelSchema):
 
 ```python
 from marshmallow_mongoengine import ModelSchema, fields
-from api.v1.users.user_schema import UserSchema
+from api.v1.users.users_schema import UserSchema
 
 class CatSchema(ModelSchema):
     class Meta:
