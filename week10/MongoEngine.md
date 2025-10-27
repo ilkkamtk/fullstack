@@ -374,6 +374,7 @@ results = list(cursor)
 - [Marshmallow](https://marshmallow.readthedocs.io/en/stable/) is a popular library for object serialization/deserialization and validation in Python.
 - Can be used with MongoEngine models to serialize data for APIs.
 - Results from MongoEngine queries are not plain dicts or lists, so Marshmallow helps convert them to JSON-serializable formats.
+- Use `marshmallow-mongoengine` extension for easier integration.
 
 ### Example Schema
 
