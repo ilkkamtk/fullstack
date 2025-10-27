@@ -71,9 +71,9 @@ if __name__ == "__main__":
 
 ---
 
-## Schema
+## Model Schema
 
-In MongoEngine, schemas are Python classes that inherit from `Document` (or `EmbeddedDocument`).
+In MongoEngine, model schemas are Python classes that inherit from `Document` (or `EmbeddedDocument`).
 
 An embedded document is a document stored inside another document, not in its own collection.
 
@@ -125,7 +125,7 @@ new_post.save()
 
 ---
 
-## Schema Types
+## Field Types
 
 - MongoEngine supports fields like:
 
