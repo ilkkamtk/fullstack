@@ -250,6 +250,17 @@ def create_cat():
     new_cat.save()
     return {"message": "Cat created successfully"}, 201
 
+# example JSON body:
+"""
+{
+  "cat_name": "Whiskers",
+  "birthdate": "2020-01-01",
+  "weight": 4.5,
+  "location": {"type": "Point", "coordinates": [12.34, 56.78]},
+  "owner": "60d5f4832f8fb814c8d6f9bc",
+  "attributes": {"color": "tabby", "indoor": true}
+}
+"""
 ```
 
 - Note `**data` passes the dictionary’s contents as parameters to the `Cat` constructor. It is equivalent to `Cat(cat_name=data["cat_name"], birthdate=data["birthdate"], ...)`.
