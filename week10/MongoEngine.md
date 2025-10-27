@@ -492,6 +492,12 @@ class UserSchema(ModelSchema):
 
 - Note the use of `exclude=('cats',)` to avoid infinite recursion when serializing because now a user has cats and each cat has an owner.
 
+### Overfetching / Underfetching
+
+- Overfetching: Retrieving more data than needed. E.g., fetching all fields of a document when only a few are required.
+- Underfetching: Not retrieving enough data, leading to additional queries later. E.g., fetching a document without its related documents, requiring separate queries to get them.
+- It can be discussed whether cats should include full owner data and vice versa. Depending on use case, you might want to limit the fields fetched or avoid nesting altogether.
+
 ## Assignment continued
 
 1. Modify the controllers to use the schemas for serialization as shown above.
