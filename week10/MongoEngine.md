@@ -332,45 +332,6 @@ Example request body:
 
 ---
 
-## Aggregations
-
-Aggregations are supported with `.aggregate()` for complex joins.
-
-### Aggregation example
-
-You can run a MongoDB aggregation pipeline via the underlying pymongo collection returned by MongoEngine:
-
-```python
-#import models...
-
-pipeline = [
-    {
-      "$lookup": {
-        # ensure this 'from' matches the actual collection name
-        "from": User._get_collection().name,
-        "localField": "owner",
-        "foreignField": "_id",
-        "as": "owner_info",
-      },
-    },
-    {"$unwind": "$owner_info"},
-    {
-      "$project": {
-        "id": 1,
-        "cat_name": 1,
-        "owner_name": "$owner_info.username",
-      },
-    },
-]
-
-# Run the pipeline and get results as a list of dicts
-cursor = Cat._get_collection().aggregate(pipeline)
-results = list(cursor)
-# results -> [{'id': ..., 'cat_name': ..., 'owner_name': ...}, ...]
-```
-
----
-
 ## Assignment
 
 1. Create a new branch Assignment5 from main. Make sure you have merged previous assignments.
