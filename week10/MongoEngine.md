@@ -151,6 +151,8 @@ new_post.save()
 
 Note: Validation and more robust serialization are covered in later lectures.
 
+- Full list of field types and options: [MongoEngine Fields Documentation](https://docs.mongoengine.org/guide/defining-documents.html#fields)
+
 ---
 
 ### CRUD Operations
@@ -438,9 +440,20 @@ def get_cat_by_id(cat_id):
 1. Create a new branch Assignment5 from main. Make sure you have merged previous assignments.
 2. Create a database connection module as shown above to `utils/db.py`.
 3. Create User and Cat models as shown above in `api/models/users_model.py` and `api/v1/cats/cats_model.py`. Replace models from previous assignments with these.
-   - Cat model should have fields: cat_name (string), birthdate (datetime), weight (number), location (PointField), owner (Reference to User), attributes (dict).
-   - User model should have fields: username (string), email (string), password (string), role (string, default "user"), created_at (datetime, default now).
-     - created_at field should use a callable, e.g. `default=lambda: datetime.datetime.now(tz=datetime.timezone.utc)`.
+   - Cat model should have fields:
+     - cat_name, string, required
+     - birthdate (datetime, required),
+     - weight (number, required),
+     - location (PointField, required),
+     - owner (Reference to User, required),
+     - attributes (dict, optional).
+   - User model should have fields:
+     - username (string, required, unique)
+     - email (string, required, unique)
+     - password (string, required)
+     - role (string, required, default "user", choices: "user", "admin").
+     - created_at (datetime, default now).
+       - created_at field should use a callable, e.g. `default=lambda: datetime.datetime.now(tz=datetime.timezone.utc)`.
 4. Modify controllers of Users and Cats to use the updated models if needed.
 5. Test the endpoints with Postman or similar tool.
    - Create a new user.
