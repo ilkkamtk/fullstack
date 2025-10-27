@@ -77,7 +77,8 @@ import datetime
 
 class Comment(EmbeddedDocument):
     body = StringField()
-    date = DateTimeField(default=datetime.datetime.utcnow)
+    # use a callable so default is evaluated per-document
+    date = DateTimeField(default=lambda: datetime.datetime.now(tz=datetime.timezone.utc))
     author = StringField()
 
 class Blog(Document):
@@ -85,11 +86,14 @@ class Blog(Document):
     author = StringField()
     body = StringField()
     comments = ListField(EmbeddedDocumentField(Comment))
-    date = DateTimeField(default=datetime.datetime.utcnow)
+    # use a callable to avoid import-time evaluation
+    date = DateTimeField(default=lambda: datetime.datetime.now(tz=datetime.timezone.utc))
     hidden = BooleanField(default=False)
     votes = IntField()
     favs = IntField()
 ```
+
+- Lambda callables are used here to ensure that the default value is generated at the time of document creation, not at the time of class definition. Without lambda, all documents would get the same timestamp.
 
 Blog post is created like this:
 
@@ -125,7 +129,7 @@ new_post.save()
   - `ReferenceField`
   - `ListField`
   - `EmbeddedDocumentField`
-  - `GeoPointField`
+  - `PointField` (GeoJSON)
   - etc.
 
 - Built-in validation:
@@ -136,6 +140,8 @@ new_post.save()
   - `regex`
   - `min_value`, `max_value`
   - Custom validation with `clean()` method.
+
+Note: Validation and more robust serialization are covered in later lectures.
 
 ---
 
@@ -188,7 +194,7 @@ Create Python classes for **Cat**, and **User** using `mongoengine.Document`.
 ### User
 
 ```python
-from mongoengine import Document, StringField, ReferenceField, PointField
+from mongoengine import Document, StringField
 
 class User(Document):
     username = StringField(required=True, unique=True, min_length=2)
@@ -199,17 +205,19 @@ class User(Document):
 ### Cat
 
 ```python
-from mongoengine import Document, StringField, DateTimeField, ReferenceField, PointField, ValidationError, NumberField, DictField
+from mongoengine import Document, StringField, DateTimeField, ReferenceField, PointField, ValidationError, FloatField, DictField
 import datetime
 
 class Cat(Document):
     cat_name = StringField(required=True, min_length=2)
     birthdate = DateTimeField(required=True)
-    weight = NumberField(required=True)
+    weight = FloatField(required=True)
     location = PointField(required=True)
     owner = ReferenceField("User", required=True)
     attributes = DictField()
 ```
+
+- Note: GeoJSON coordinates are [lng, lat].
 
 ---
 
@@ -218,25 +226,25 @@ class Cat(Document):
 ### Example: Get all Cats
 
 ```python
-""" cats_controller.py """
-from flask import Blueprint, jsonify
-from models.cat import Cat
+# imports...
 
 cats_bp = Blueprint("cats", __name__)
 @cats_bp.route("/", methods=["GET"])
 def get_all_cats():
     cats = Cat.objects()
-    return jsonify(cats)
+    return jsonify(cats), 200
 
 ### Example: Create a new Cat (assuming that the JSON body matches the Cat schema):
 @cats_bp.route("/", methods=["POST"])
 def create_cat():
     data = request.get_json()
-    new_cat = Cat(data)
+    new_cat = Cat(**data)
     new_cat.save()
     return jsonify(new_cat), 201
 
 ```
+
+- Note `**data` passes the dictionary’s contents as parameters to the `Cat` constructor. It is equivalent to `Cat(cat_name=data["cat_name"], birthdate=data["birthdate"], ...)`.
 
 ---
 
@@ -329,12 +337,13 @@ Aggregations are supported with `.aggregate()` for complex joins.
 You can run a MongoDB aggregation pipeline via the underlying pymongo collection returned by MongoEngine:
 
 ```python
-from models.cat import Cat
+#import models...
 
 pipeline = [
     {
       "$lookup": {
-        "from": "owners",
+        # ensure this 'from' matches the actual collection name
+        "from": User._get_collection().name,
         "localField": "owner",
         "foreignField": "_id",
         "as": "owner_info",
@@ -345,7 +354,7 @@ pipeline = [
       "$project": {
         "id": 1,
         "cat_name": 1,
-        "owner_name": "$owner_info.name",
+        "owner_name": "$owner_info.username",
       },
     },
 ]
@@ -367,7 +376,7 @@ results = list(cursor)
 - User schema (note: without password):
 
 ```python
-from marshmallow import ModelSchema, fields
+from marshmallow_mongoengine import ModelSchema, fields
 
 class UserSchema(ModelSchema):
     class Meta:
@@ -378,40 +387,35 @@ class UserSchema(ModelSchema):
 - Cat schema (including nested owner):
 
 ```python
-from marshmallow import ModelSchema, fields
+from marshmallow_mongoengine import ModelSchema, fields
+from api.v1.users.user_schema import UserSchema
 
 class CatSchema(ModelSchema):
     class Meta:
         model = Cat
-        fields = ("id", "cat_name","weight")
-        birthdate = fields.DateTime(format="timestamp_ms")
-        owner = fields.Nested(UserSchema)
-        location = fields.Dict()
-        attributes = fields.Dict()
+        # Automatically include all model fields
+        # You can also list specific fields if you want: fields = ("id", "cat_name", "weight", ...)
+        # exclude = ("some_field", )  # optional
+    # Custom or overridden fields
+    birthdate = fields.DateTime(format="iso")
+    owner = fields.Nested(UserSchema)
+    location = fields.Dict()
 ```
-
-- Fields id, cat_name and weight are included directly because they are primitive types.
-- birthdate is needs to be formatted for JSON because DateTime is not JSON serializable.
-- owner is a nested object, so we use `fields.Nested()` with the UserSchema.
-- location needs to be converted to a dict for JSON serialization.
 
 ### Using Schemas in Controllers
 
 ```python
-from flask import Blueprint, jsonify
-from models.cat import Cat
-from schemas.cat_schema import CatSchema
+# imports...
 
 cat_bp = Blueprint("cats", __name__)
 
-@cat_bp.route("/<cat_id>", methods=["GET"])
+@cat_bp.route("/", methods=["GET"])
 def get_all_cats():
-    # Fetch all cats and populate the owner field with full user data
     cats = Cat.objects.select_related()  # auto-populates ReferenceFields
     cats_json = CatSchema(many=True).dump(cats)
     return cats_json, 200
 
-@cat_bp.route("/", methods=["GET"])
+@cat_bp.route("/<cat_id>", methods=["GET"])
 def get_cat_by_id(cat_id):
     cat = Cat.objects.get(id=cat_id)
     cat_json = CatSchema().dump(cat)
@@ -419,15 +423,16 @@ def get_cat_by_id(cat_id):
 ```
 
 - Note the use of `many=True` when serializing a list of objects. When serializing a single object it is not needed.
+- The `dump()` method converts the model instances to JSON-serializable dicts. This is the reason we use marshmallow here.
 
 ## Assignment
 
 1. Create a new branch Assignment5 from main. Make sure you have merged previous assignments.
 2. Create a database connection module as shown above to `utils/db.py`.
 3. Create User and Cat models as shown above in `api/models/users_model.py` and `api/v1/cats/cats_model.py`. Replace models from previous assignments with these.
-   - Cat model should have fields: cat_name (string), birthdate (datetime), weight (number), location (GeoPoint), owner (Reference to User), attributes (dict).
+   - Cat model should have fields: cat_name (string), birthdate (datetime), weight (number), location (PointField), owner (Reference to User), attributes (dict).
    - User model should have fields: username (string), email (string), password (string), role (string, default "user"), created_at (datetime, default now).
-     - created_at field should use `datetime.datetime.now(tz=datetime.timezone.utc)` as default.
+     - created_at field should use a callable, e.g. `default=lambda: datetime.datetime.now(tz=datetime.timezone.utc)`.
 4. Modify controllers of Users and Cats to use the updated models if needed.
 5. Test the endpoints with Postman or similar tool.
    - Create a new user.
@@ -438,14 +443,16 @@ def get_cat_by_id(cat_id):
    - Delete a cat.
    - Create additional cats and owners and test querying by area.
    - Do the same for users
-6. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
-7. Modify the controllers to use the schemas for serialization as shown above.
+6. If owner field in Cat returns only the ObjectId. Modify the GET endpoints to populate the owner field using `select_related()` as shown above.
+7. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
+8. Modify the controllers to use the schemas for serialization as shown above.
 
 ---
 
 ## Reverse lookup
 
-- To find all Cats owned by a specific User, you can use the `ReferenceField` in reverse.
+- Reverse lookup means finding documents that reference a specific document.
+- To find all Cats owned by a specific User, you can use the `ReferenceField` in reverse. In `Cat`, the `owner` field references `User`. To find all Cats for a User, you can query `Cat` with the User instance.
 
 ### Find Cats by Owner
 
@@ -456,10 +463,26 @@ class User(Document):
     # fields...
 
    @property
-    def cats(self):
-         from ..api.v1.cats.cats_model import Cat
-         return Cat.objects(owner=self)
+   def cats(self):
+        from ..api.v1.cats.cats_model import Cat
+        return Cat.objects(owner=self)
 ```
+
+Schema:
+
+```python
+from marshmallow import ModelSchema, fields
+
+class UserSchema(ModelSchema):
+    # use a lazy callable to avoid importing CatSchema at module import time
+    cats = fields.Nested(lambda: CatSchema(), many=True)
+
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "cats")
+```
+
+- Lazy callable is a technique to avoid circular imports by delaying the import of `CatSchema` until it is actually needed. How does python find CatSchema even its not imported at the top of the file? Because the lambda function is called only when the schema is being used, not when the module is imported. Avoiding importing CatSchema at the top prevents circular import issues.
 
 Controller:
 
@@ -468,16 +491,6 @@ def get_user_cats(user_id):
     user = User.objects.get(id=user_id)
     cats = user.cats
     return jsonify(cats)
-```
-
-Schema:
-
-```python
-class UserSchema(ModelSchema):
-    cats = fields.Nested(CatSchema, many=True)
-    class Meta:
-        model = User
-        fields = ("id", "username", "email", "cats")
 ```
 
 ## Assignment continued
