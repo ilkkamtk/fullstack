@@ -256,8 +256,8 @@ def create_cat():
   "cat_name": "Whiskers",
   "birthdate": "2020-01-01",
   "weight": 4.5,
-  "location": {"type": "Point", "coordinates": [12.34, 56.78]},
-  "owner": "60d5f4832f8fb814c8d6f9bc",
+  "location": {"type": "Point", "coordinates": [24.76, 60.22]},
+  "owner": "some_user_id",
   "attributes": {"color": "tabby", "indoor": true}
 }
 """
@@ -279,7 +279,7 @@ class Cat(Document):
     # fields...
 
     @classmethod
-    def find_by_owner(cls, owner_id: str):
+    def find_by_owner(cls, owner_id):
         return cls.objects(owner=owner_id)
 ```
 
@@ -299,17 +299,17 @@ class Cat(Document):
     # fields...
 
     @classmethod
-    def find_by_area(cls, polygon):
-        return cls.objects(location__geo_within={"$polygon": polygon})
+    def find_by_area(cls, geometry):
+        return cls.objects(location__geo_within={"$geometry": geometry})
 ```
 
 Endpoint:
 
 ```python
 @cats_bp.route("/area", methods=["POST"])
-def cats_in_area():
-    polygon = request.get_json()["coordinates"][0]
-    cats = Cat.find_by_area(polygon)
+def get_cats_in_area():
+    geometry = request.get_json()
+    cats = Cat.find_by_area(geometry)
     return cats.to_json(), 200
 ```
 
@@ -317,36 +317,20 @@ Example request body:
 
 ```json
 {
-  "type": "Polygon",
   "coordinates": [
     [
-      [12.0, 34.0],
-      [56.0, 78.0],
-      [90.0, 12.0],
-      [12.0, 34.0]
+      [24.73091877995617, 60.24583005429855],
+      [24.73091877995617, 60.21004096366292],
+      [24.791063894993783, 60.21004096366292],
+      [24.791063894993783, 60.24583005429855],
+      [24.73091877995617, 60.24583005429855]
     ]
-  ]
+  ],
+  "type": "Polygon"
 }
 ```
 
 ---
-
-## Selecting & Populating
-
-Populating means fetching related documents referenced by `ReferenceField`s. It is similar to SQL joins.
-
-- In MongoEngine:
-
-  - `.only("field1", "field2")` to select fields.
-  - `.select_related()` to populate reference fields.
-
-Example:
-
-```python
-cats = Cat.objects().select_related().only("cat_name", "owner__username")
-```
-
-- Note the double underscore `__` to access fields of the referenced document.
 
 ## Aggregations
 
@@ -445,6 +429,23 @@ def get_cat_by_id(cat_id):
 - Note the use of `many=True` when serializing a list of objects. When serializing a single object it is not needed.
 - The `dump()` method converts the model instances to JSON-serializable dicts. This is the reason we use marshmallow here.
 
+## Populating
+
+Populating means fetching related documents referenced by `ReferenceField`s. It is similar to SQL joins.
+
+- In MongoEngine:
+
+  - `.only("field1", "field2")` to select fields.
+  - `.select_related()` to populate reference fields.
+
+Example:
+
+```python
+cats = Cat.objects().select_related().only("cat_name", "owner__username")
+```
+
+- Note the double underscore `__` to access fields of the referenced document.
+
 ## Assignment
 
 1. Create a new branch Assignment5 from main. Make sure you have merged previous assignments.
@@ -472,11 +473,14 @@ def get_cat_by_id(cat_id):
    - Get a cat by id.
    - Modify a cat.
    - Delete a cat.
-   - Create additional cats and owners and test querying by area.
-   - Do the same for users.
-6. If owner field in Cat returns only the ObjectId. Modify the GET endpoints to populate the owner field using `select_related()` as shown above.
-7. JSON returned from GET endpoints are not plain dicts/lists, so you need to use Marshmallow for serialization. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
-8. Modify the controllers to use the schemas for serialization as shown above.
+   - Get cats by owner id.
+   - Get cats in an area (polygon).
+   - Do the same for users, exept for area search.
+   - Create additional cats and owners as needed.
+   - Test the reverse lookup to get all cats for a user.
+6. JSON returned from GET endpoints are not plain dicts/lists, so you need to use Marshmallow for serialization. Create Marshmallow schemas for User and Cat in `api/schemas/user_schema.py` and `api/v1/cats/cat_schema.py`.
+7. Modify the controllers to use the schemas for serialization as shown above.
+8. If owner field in Cat returns only the ObjectId. Modify the GET endpoints to populate the owner field using `select_related()` as shown above.
 
 ---
 
