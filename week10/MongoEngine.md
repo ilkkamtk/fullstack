@@ -480,7 +480,17 @@ class UserSchema(ModelSchema):
         fields = ("id", "username", "email", "cats")
 ```
 
-- The `fields.Nested` allows for the inclusion of related documents in the serialized output. This means when you serialize a User, it will also include a list of Cats owned by that User.
+- The `fields.Nested` allows for the inclusion of related documents in the serialized output. This means when you serialize a User, it will also include a list of Cats owned by that User. Import cannot be in the top of the file to avoid circular import issues.
+- The same needs to be applied in CatSchema for User:
+
+```python
+# remove top import of UserSchema
+
+# in class CatSchema(ModelSchema):
+    owner = fields.Nested('api.v1.users.users_schema.UserSchema', exclude=('cats',))
+```
+
+- Note the use of `exclude=('cats',)` to avoid infinite recursion when serializing because now a user has cats and each cat has an owner.
 
 ## Assignment continued
 
