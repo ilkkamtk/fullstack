@@ -38,24 +38,32 @@ PORT=3000
 And in `app.py`:
 
 ```python
-from flask import Flask
-from dotenv import load_dotenv
 import os
-from utils.db import mongo_connect
+from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
+from dotenv import load_dotenv
+from api.v1.cats.cats_routes import cats_bp
+from api.v1.users.users_routes import users_bp
+from api.utils.db import mongo_connect
 
 load_dotenv()
 
 app = Flask(__name__)
-port = int(os.getenv("PORT", 3000))
 
-mongo_connect()
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_prefix=1)
 
-@app.route("/")
-def home():
-    return {"message": "Flask + MongoEngine API running"}
+app.register_blueprint(cats_bp)
+app.register_blueprint(users_bp)
+
+@app.get("/")
+def index():
+    return "Welcome to my REST API! Api endpoints can be found under /api/v1"
+
 
 if __name__ == "__main__":
-    app.run(port=port, debug=True)
+    app.run(host="127.0.0.1", port=os.getenv("PORT"), debug=os.getenv("FLASK_DEBUG"), use_reloader=os.getenv("FLASK_RELOADER"))
+    # Establish DB connection
+    mongo_connect()
 ```
 
 - MongoEngine automatically reconnects if the connection drops.
