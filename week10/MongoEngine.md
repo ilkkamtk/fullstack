@@ -343,6 +343,7 @@ Example request body:
      - weight (number, required),
      - location (PointField, required),
      - owner (Reference to User, required),
+     - image (string, required),
      - attributes (dict, optional).
    - User model should have fields:
      - username (string, required, unique)
