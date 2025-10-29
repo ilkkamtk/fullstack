@@ -142,9 +142,9 @@ Patrick Ausderau / Ilkka Kylmäniemi
   ```
 
 - Browse the database in MongoDB Atlas
-- Database has two collections: `users` and `cats`
-  - `users` contains user information
-  - `cats` contains cat information, including name, owner, birthdate, weight and a GeoJSON location
+- Database has two collections: `user` and `cat`
+  - `user` contains user information
+  - `cat` contains cat information, including name, owner, birthdate, weight and a GeoJSON location
 - One cat has a placeholder image; replace it with a real image URL from Wikipedia: `https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/1920px-Cat_August_2010-4.jpg`
 
 ---
@@ -168,11 +168,11 @@ Patrick Ausderau / Ilkka Kylmäniemi
   ```
 
 - [Basic commands](https://www.mongodb.com/docs/mongodb-shell/run-commands/)
-- Select database: `use catsdb`, show all databases: `show dbs`
+- Select database: `use cat-labs`, show all databases: `show dbs`
 - [Perform CRUD operations](https://www.mongodb.com/docs/mongodb-shell/crud/)
 
-1. Select all documents from the `cats` collection
-2. Select all documents from the `users` collection
+1. Select all documents from the `cat` collection
+2. Select all documents from the `user` collection
 
 - [Query and Projection Operators](https://www.mongodb.com/docs/manual/reference/mql/query-predicates/#std-label-query-projection-operators-top)
 - [Date](https://www.mongodb.com/docs/manual/reference/method/Date/#insert-and-return-isodate-objects)
@@ -182,16 +182,16 @@ Patrick Ausderau / Ilkka Kylmäniemi
 
 - [Geospatial queries](https://www.mongodb.com/docs/manual/geospatial-queries/)
 
-Prerequisite: ensure a 2dsphere index on the GeoJSON field (here we use `cats.location`). Run once:
+Prerequisite: ensure a 2dsphere index on the GeoJSON field (here we use `cat.location`). Run once:
 
 ```javascript
-db.cats.createIndex({ location: '2dsphere' });
+db.cat.createIndex({ location: '2dsphere' });
 ```
 
 1. Find all cats within the following bounding region (approx. Africa). Use a Polygon with these corner coordinates (Longitude, Latitude):
 
    ```javascript
-   db.cats.find({
+   db.cat.find({
      location: {
        $geoWithin: {
          $geometry: {
@@ -214,7 +214,7 @@ db.cats.createIndex({ location: '2dsphere' });
 2. Find all cats within 100 km of Helsinki:
 
    ```javascript
-   db.cats.find({
+   db.cat.find({
      location: {
        $near: {
          $geometry: { type: 'Point', coordinates: [24.9384, 60.1695] },
@@ -235,7 +235,7 @@ db.cats.createIndex({ location: '2dsphere' });
 - Example: Calculate the average age of cats
 
   ```javascript
-  db.cats.aggregate([
+  db.cat.aggregate([
     {
       $group: {
         _id: null,
@@ -259,7 +259,7 @@ db.cats.createIndex({ location: '2dsphere' });
 - Example, get all cats and their owners. Show only the cat name and owner name:
 
   ```javascript
-  db.cats.aggregate([
+  db.cat.aggregate([
     {
       $lookup: {
         from: 'owners',
@@ -285,9 +285,9 @@ db.cats.createIndex({ location: '2dsphere' });
 
 ## Assignment 3
 
-- Select all cats from the `cats` collection and include owner data using the aggregation pipeline (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>):
+- Select all cats from the `cat` collection and include owner data using the aggregation pipeline (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>):
   (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>)
-  - Use `$lookup` to perform left outer join between `cats` and `owners` (as `owner_info`).
+  - Use `$lookup` to perform left outer join between `cat` and `owner` (as `owner_info`).
   - `$unwind` the `owner_info` array.
   - `$match` documents where `owner_info.name` is "John".
   - `$project` fields you want to show from cats and the joined owners.
