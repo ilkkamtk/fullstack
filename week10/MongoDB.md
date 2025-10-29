@@ -262,7 +262,7 @@ db.cat.createIndex({ location: '2dsphere' });
   db.cat.aggregate([
     {
       $lookup: {
-        from: 'owners',
+        from: 'user',
         localField: 'owner',
         foreignField: '_id',
         as: 'owner_info',
