@@ -57,34 +57,34 @@
 
 - [Flask blueprints](week9/blueprints.md)
 
-### Week 10
+### Week 10-11
 
 - [MongoDB](week10/MongoDB.md)
 - [MongoEngine](week10/MongoEngine.md)
 
-### Week 11
+### Week 12
 
 - Authentication and Authorization with decorators
 - File upload handling
 
-### Week 12
+### Week 13
 
 - Input validation server
 - Input validation client
 
-### Week 13
+### Week 14
 
 - Security best practices
 - Deployment
-
-### Week 14
-
-- Project
 
 ### Week 15
 
 - Project
 
 ### Week 16
+
+- Project
+
+### Week 17
 
 - Project
