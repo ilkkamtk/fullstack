@@ -133,7 +133,7 @@ Patrick Ausderau / Ilkka Kylmäniemi
 
     - on older macOS versions, the profile file may be `~/.bash_profile` or `~/.bashrc` instead of `~/.zshrc`
 
-- Restore from [this mongo dump](./cat-labs.zip)
+- Restore from [this mongo dump](./backup.zip)
 - Download the dump file and extract it
 - with mongorestore:
 
