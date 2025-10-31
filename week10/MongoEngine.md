@@ -64,9 +64,10 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=os.getenv("PORT"), debug=os.getenv("FLASK_DEBUG"), use_reloader=os.getenv("FLASK_RELOADER"))
     # Establish DB connection
     mongo_connect()
+
+    app.run(host="127.0.0.1", port=os.getenv("PORT"), debug=os.getenv("FLASK_DEBUG"), use_reloader=os.getenv("FLASK_RELOADER"))
 ```
 
 - MongoEngine automatically reconnects if the connection drops.
