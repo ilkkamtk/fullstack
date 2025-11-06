@@ -285,8 +285,7 @@ db.cat.createIndex({ location: '2dsphere' });
 
 ## Assignment 3
 
-- Select all cats from the `cat` collection and include owner data using the aggregation pipeline (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>):
-  (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation-pipeline/>)
+- Select all cats by a certain user from the `cat` collection and include owner data using the aggregation pipeline (docs: <https://www.mongodb.com/docs/manual/reference/operator/aggregation/match/#equality-match>)
   - Use `$lookup` to perform left outer join between `cat` and `owner` (as `owner_info`).
   - `$unwind` the `owner_info` array.
   - `$match` documents where `owner_info.name` is "John".
