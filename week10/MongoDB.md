@@ -275,7 +275,7 @@ db.cat.createIndex({ location: '2dsphere' });
       $project: {
         _id: 1,
         cat_name: 1,
-        owner_name: '$owner_info.name',
+        owner_name: '$owner_info.username',
       },
     },
   ]);
