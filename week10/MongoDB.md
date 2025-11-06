@@ -164,7 +164,7 @@ Patrick Ausderau / Ilkka Kylmäniemi
 - Connect to your Atlas cluster:
 
   ```bash
-  mongosh "mongodb+srv://<USERNAME>:<PASSWORD>@<HOST>/animalsdb?retryWrites=true&w=majority"
+  mongosh "mongodb+srv://<USERNAME>:<PASSWORD>@<HOST>?retryWrites=true&w=majority"
   ```
 
 - [Basic commands](https://www.mongodb.com/docs/mongodb-shell/run-commands/)
