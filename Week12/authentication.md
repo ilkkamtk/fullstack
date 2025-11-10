@@ -82,23 +82,18 @@ The process of authentication using JWT and subsequent requests with the token i
 sequenceDiagram
     participant Client
     participant Server
-    participant AuthServer
+  Client->>Server: HTTP Request with Credentials (login)
+  Note over Server: Validates credentials and creates/signs JWT
+  Server->>Client: HTTP Response with JWT
+  Note over Client: Stores JWT (usually in memory)
 
-    Client->>Server: HTTP Request with Credentials (login)
-    Note over Server: Validates credentials
-    Server->>AuthServer: Request for JWT
-    Note over AuthServer: Creates and signs JWT
-    AuthServer->>Server: JWT
-    Server->>Client: HTTP Response with JWT
-    Note over Client: Stores JWT (usually in memory)
-
-    Client->>Server: Subsequent HTTP Request with JWT in header
-    Note over Server: Verifies JWT
-    alt JWT valid
-        Server->>Client: Authorized Response
-    else JWT invalid or expired
-        Server->>Client: Unauthorized Response
-    end
+  Client->>Server: Subsequent HTTP Request with JWT in header
+  Note over Server: Verifies JWT
+  alt JWT valid
+    Server->>Client: Authorized Response
+  else JWT invalid or expired
+    Server->>Client: Unauthorized Response
+  end
 ```
 
 ### Client-Side State Management
