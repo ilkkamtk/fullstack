@@ -5,7 +5,7 @@
 In any realistic interactive Web application you will come across the need of retaining information between individual pages. This is referred to as "maintaining state" or as the "persistence of data". HTTP protocol does not support this — it is a _stateless_ protocol: every page request starts in a blank state with no knowledge of data that was available on the previous page. Since HTTP is stateless by nature, web applications need to implement their own methods for maintaining state. There are several common strategies to implement this on the server-side.
 Choosing the right method for maintaining state depends on the specific requirements of your application, such as the type of data being stored, security considerations, scalability, and whether the state is user-specific or shared across users. It's common to use a combination of these methods to address different aspects of application state.
 
-### Cookies (1)
+### Cookies
 
 - Small pieces of data stored on the client's browser. Cookies are sent back to the server with every HTTP request.
 - Cookies store variables as name and value pairs, plus additional information such as expiration time and the origin (domain) where the cookie came from.
@@ -110,10 +110,6 @@ sequenceDiagram
   - Data is only accessible on the client side and limited to about 5 MB.
 - Client-Side Frameworks and Libraries like React (with Context API or Redux), Angular (with services), Vue.js (with Vuex) provide their own mechanisms for maintaining state on the client side.
 
-### State in Server
-
-Flask is a minimalistic framework. While it doesn't offer the extensive features of larger frameworks, it does provide built-in mechanisms for maintaining state, specifically through sessions. It is also easy to implement your own state management using cookies or tokens.
-
 ---
 
 ### Cookies and Sessions
@@ -140,7 +136,7 @@ For implementing **JSON Web Tokens (JWTs)**, you use standard Python packages:
 
 - **JWT Generation and Verification:** One popular package for generating and verifying JWT tokens is **`PyJWT`**.
   - You `encode` (create) and `decode` (verify) tokens within your Flask routes.
-  - This extension provides decorators and utilities to protect routes, extract tokens from headers, and handle refreshing tokens, simplifying the implementation of JWT-based authentication in a Flask application.
+  - You can use [decorators](decorator.md) to protect routes, extract tokens from headers, and handle refreshing tokens, simplifying the implementation of JWT-based authentication in a Flask application.
 
 ## User Authentication and Authorization with JWT
 
@@ -151,33 +147,19 @@ In web applications, authentication is typically done by verifying a username an
 
 1. Install required packages
 
-Recommended installation using well-maintained libraries. Replace or adapt depending on the extension you prefer (see notes below):
+   ```bash
+   pip install PyJWT bcrypt
+   ```
 
-```bash
-pip install Flask PyJWT bcrypt python-dotenv
-```
-
-Alternative (if you prefer a Flask helper):
-
-```bash
-pip install Flask flask-bcrypt PyJWT python-dotenv
-```
-
-1. Generate a secret key for signing the tokens and store it in the `.env` file: `JWT_SECRET_KEY=...`
+2. Generate a secret key for signing the tokens and store it in the `.env` file: `JWT_SECRET_KEY=...`
 
    - Use a long random string.
 
-   - Or use Python's `os.urandom(24).hex()` to generate a string.
-
-   - **Configuration Note:** Flask accesses this key via `os.environ.get('JWT_SECRET_KEY')` (or `os.getenv('JWT_SECRET_KEY')`).
-
-1. Create a route `POST /api/auth/login` that accepts a username and password in the request body.
+3. Create a route `POST /api/auth/login` that accepts a username and password in the request body.
 
    - Add a route handler to the Blueprint file: `blueprints/api/v1/auth_routes.py`.
 
    - The route handler calls the controller method `post_login`, passing the request data.
-
-   <!-- end list -->
 
    ```python
    # File: blueprints/api/v1/auth_routes.py
@@ -188,7 +170,7 @@ pip install Flask flask-bcrypt PyJWT python-dotenv
        return jsonify(response), status_code
    ```
 
-1. In the _model_ implement a method for verifying the username and password combination and returning the user object if found:
+4. In the _model_ implement a method for verifying the username and password combination and returning the user object if found:
 
    ```python
    # File: blueprints/api/v1/users/users_model.py
@@ -214,7 +196,7 @@ pip install Flask flask-bcrypt PyJWT python-dotenv
            return None
    ```
 
-1. In the controller implement token generation for the logged in user, something like this:
+5. In the controller implement token generation for the logged in user, something like this:
 
    ```python
    # File: blueprints/api/v1/auth_controller.py
@@ -256,7 +238,7 @@ pip install Flask flask-bcrypt PyJWT python-dotenv
 
    - If the user is found, `jwt.encode()` is used to generate a JWT token. The token is sent back to the client along with the user object.
 
-1. Create a decorator for handling requests to endpoints where authentication is needed in the file `utils/auth_utils.py`.
+6. Create a decorator for handling requests to endpoints where authentication is needed in the file `utils/auth_utils.py`.
 
    - This function, typically named `token_required`, performs token extraction, validation (`jwt.decode()`), user lookup, and passes the user object to the route handler.
 
@@ -300,7 +282,7 @@ pip install Flask flask-bcrypt PyJWT python-dotenv
      return decorated
    ```
 
-1. Add a protected route handler that returns the authenticated user's object (single `/me` example):
+7. Add a protected route handler that returns the authenticated user's object (single `/me` example):
 
    ```python
    # File: blueprints/api/v1/auth_routes.py
@@ -320,7 +302,7 @@ pip install Flask flask-bcrypt PyJWT python-dotenv
      return UserSchema().dump(user), 200
    ```
 
-1. Test login and the protected route with VS Code REST Client:
+8. Test login and the protected route with VS Code REST Client:
 
    ```http
    ### Post login
@@ -329,121 +311,27 @@ pip install Flask flask-bcrypt PyJWT python-dotenv
 
    {
      "username": "JohnDoe",
-     "password": "to-be-hashed-pw1"
+     "password": "2o48y5"
    }
    ```
 
    - Check the response and copy the token from the response body.
 
-```http
-### Get my user info
-GET http://localhost:3000/api/auth/me
-Authorization: Bearer <put-your-token-from-login-response-here>
-```
+   ```http
+   ### Get my user info
+   GET http://localhost:3000/api/auth/me
+   Authorization: Bearer <put-your-token-from-login-response-here>
+   ```
 
-- or test with Postman (set 'Bearer Token' on the Authorization tab after successful login POST).
+   - or test with Postman (set 'Bearer Token' on the Authorization tab after successful login POST).
 
-1. Now you can use the authentication decorator with any protected route.
+9. Now you can use the authentication decorator with any protected route.
 
-- Information about the authenticated user is passed to the route as the parameter `current_user` injected by `@token_required`.
-
-### Token storage & lifecycle guidance
-
-- Access tokens should be short-lived (e.g., 10–15 minutes). Use refresh tokens to obtain new access tokens without forcing the user to re-login.
-- Store access tokens in memory (avoid localStorage where possible) for SPAs to reduce XSS risk. Store refresh tokens in an HttpOnly, Secure cookie and rotate them on refresh where practical.
-- For server-rendered apps prefer HttpOnly, Secure cookies for tokens and protect against CSRF (SameSite cookie attribute and/or CSRF tokens).
-- Implement token revocation/blacklist (store token `jti` values or session IDs in a server-side store like Redis) to support logout and forced revocation.
-
-### Refresh token (brief overview)
-
-- Use a long-lived refresh token (kept securely) and a short-lived access token. When the access token expires the client uses the refresh token to request a new access token.
-- Protect refresh token endpoints with rate limiting and secure storage and rotate refresh tokens after use to mitigate theft.
-
-### JWT verification & error handling
-
-- Always handle `ExpiredSignatureError`, `InvalidTokenError` and return generic 401 responses without revealing internal details. Consider logging the specific error server-side for diagnostics.
-
-### Recommended libraries
-
-- Consider [Flask-JWT-Extended](https://flask-jwt-extended.readthedocs.io/) for a feature-rich, battle-tested set of helpers for access/refresh tokens, decorators, and token revocation support.
-- Use `python-dotenv` or another config mechanism to load `JWT_SECRET_KEY` and `SECRET_KEY` from `.env` securely during development.
+   - Information about the authenticated user is passed to the route as the parameter `current_user` injected by `@token_required`.
 
 ---
 
-### Example: Flask-JWT-Extended (access + refresh tokens)
-
-Below is a minimal example showing how to use `Flask-JWT-Extended` to create access and refresh tokens, protect endpoints, and implement token revocation using Redis as a simple blacklist store.
-
-```python
-from flask import Flask, request, jsonify
-from flask_jwt_extended import (
-  JWTManager, create_access_token, create_refresh_token,
-  jwt_required, get_jwt_identity, get_jwt
-)
-import os
-import redis
-
-app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 900  # 15 minutes
-jwt = JWTManager(app)
-
-# Simple Redis connection (adjust host/port or use a connection URL)
-revoked_store = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
-
-@jwt.token_in_blocklist_loader
-def check_if_token_revoked(jwt_header, jwt_payload):
-  jti = jwt_payload['jti']
-  return revoked_store.get(jti) is not None
-
-@app.route('/api/auth/login', methods=['POST'])
-def login():
-  data = request.get_json() or {}
-  username = data.get('username')
-  password = data.get('password')
-  # TODO: verify username/password and load user_id
-  user_id = verify_and_get_user_id(username, password)
-  if not user_id:
-    return jsonify({'msg': 'Bad credentials'}), 401
-
-  access = create_access_token(identity=user_id)
-  refresh = create_refresh_token(identity=user_id)
-  return jsonify(access_token=access, refresh_token=refresh), 200
-
-@app.route('/api/auth/refresh', methods=['POST'])
-@jwt_required(refresh=True)
-def refresh():
-  current_user = get_jwt_identity()
-  new_access = create_access_token(identity=current_user)
-  return jsonify(access_token=new_access), 200
-
-@app.route('/api/auth/logout_access', methods=['DELETE'])
-@jwt_required()
-def logout_access():
-  jti = get_jwt()['jti']
-  revoked_store.set(jti, 'true')
-  return jsonify(msg='Access token revoked'), 200
-
-@app.route('/api/auth/logout_refresh', methods=['DELETE'])
-@jwt_required(refresh=True)
-def logout_refresh():
-  jti = get_jwt()['jti']
-  revoked_store.set(jti, 'true')
-  return jsonify(msg='Refresh token revoked'), 200
-
-def verify_and_get_user_id(username, password):
-  # Placeholder: implement your user lookup and password check
-  # Return a user id (string/int) on success, or None on failure
-  return None
-
-```
-
-Notes:
-
-- Use a production-ready Redis configuration and secure connection.
-- `Flask-JWT-Extended` also provides helpful callbacks, role/claim support, and utilities to ease implementation; consult the docs for advanced patterns.
-
-## Assignment 5, part A - User authentication
+## Assignment
 
 1. Continue your existing Flask app and create a branch `authentication`
 1. Implement user authentication to your app
@@ -462,79 +350,3 @@ Notes:
      - Use e.g. conditional statements in the controllers to decide updates and deletes based on the user level.
 
 ---
-
-## Cookies and Sessions in Depth
-
-To effectively manage application state, understanding cookies and sessions is crucial. Here's an in-depth look at both:
-
-### Cookies
-
-- **Definition:** Small pieces of data sent from the server and stored on the client's browser. They are included in every HTTP request to the same server.
-- **Storage Location:** Client-side (in the user's browser).
-- **Lifespan:** Can be set to expire at a specific time or after a certain duration. Persistent cookies remain until they expire or are deleted, while session cookies are temporary and deleted when the browser is closed.
-- **Common Use Cases:**
-  - **User Preferences:** Remembering language, theme, or layout preferences.
-  - **Shopping Carts:** Keeping track of items added to a cart by the user.
-  - **Authentication Tokens:** Maintaining user login sessions.
-- **Security Implications:**
-  - **HttpOnly Flag:** If set, the cookie cannot be accessed via JavaScript, helping to prevent XSS attacks.
-  - **Secure Flag:** Ensures the cookie is only sent over HTTPS, protecting it from being intercepted over unsecure connections.
-  - **SameSite Attribute:** Helps to prevent CSRF attacks by controlling when cookies are sent with cross-site requests.
-- **Pros and Cons:**
-
-  | Pros                                  | Cons                           |
-  | ------------------------------------- | ------------------------------ |
-  | Simple to implement                   | Limited storage capacity (4KB) |
-  | Supported by all browsers             | Privacy concerns               |
-  | Can be made secure (HttpOnly, Secure) | Can be disabled by the user    |
-
-### Sessions
-
-- **Definition:** Server-side storage of user data, with a unique session identifier sent to the client.
-- **Storage Location:** Server-side (on the web server), with the session ID stored client-side (usually in a cookie).
-- **Lifespan:** Typically tied to the user's session on the website. Can be set to expire after a period of inactivity or at a specific time.
-- **Common Use Cases:**
-  - **User Authentication:** Keeping users logged in as they navigate the site.
-  - **Temporary Data Storage:** Storing data that should not be persisted across sessions, like form inputs or multi-step process data.
-- **Security Implications:**
-  - Session data is stored on the server, reducing the risk of client-side attacks (like XSS).
-  - However, session fixation and cross-site scripting attacks can still pose risks if not properly mitigated.
-- **Pros and Cons:**
-
-  | Pros                                                  | Cons                                                               |
-  | ----------------------------------------------------- | ------------------------------------------------------------------ |
-  | More secure than cookies (data not exposed to client) | Requires server resources                                          |
-  | Can store larger amounts of data                      | Needs proper management to prevent issues (e.g., session fixation) |
-  | Data can be complex objects                           | Limited by server memory and configuration                         |
-
-### Best Practices for Managing Cookies and Sessions
-
-1. **For Cookies:**
-
-   - Use the Secure, HttpOnly, and SameSite attributes to enhance security.
-   - Keep the amount of data in cookies to a minimum. Use them for essential information only.
-   - Regularly review and delete old or unused cookies to reduce clutter and potential security risks.
-
-2. **For Sessions:**
-   - Implement proper session expiration and renewal mechanisms to prevent session hijacking.
-   - Store sensitive data on the server, and use sessions to manage user authentication states.
-   - Regularly review and clean up inactive or expired sessions to free up server resources.
-
-### Implementing Cookies and Sessions in Popular Frameworks
-
-- **Flask:**
-  - **Cookies:** Use `response.set_cookie()` to set cookies and `request.cookies.get()` to read them.
-  - **Sessions:** Flask's session management is built-in. Use `session['key'] = value` to set and `value = session.get('key')` to get session data. Remember to set a `SECRET_KEY` for your app.
-- **Express (Node.js):**
-  - **Cookies:** Use `res.cookie()` to set cookies and `req.cookies` to access them (requires cookie-parser middleware).
-  - **Sessions:** Use express-session middleware. Configure session secret and other options in the session middleware.
-
-### Further Reading and Resources
-
-- [MDN Web Docs on HTTP Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)
-- [OWASP Cookie Security](https://owasp.org/www-community/OWASP_Cookie_Security_Project)
-- [Flask Documentation on Sessions](https://flask.palletsprojects.com/en/2.0.x/quickstart/#sessions)
-- [Express.js Guide on Using Cookies](https://expressjs.com/en/api.html#res.cookie)
-- [JWT.io Introduction to JSON Web Tokens](https://jwt.io/introduction)
-
-Understanding and effectively managing cookies and sessions is vital for building secure and user-friendly web applications. Proper implementation ensures that your application can maintain state, provide personalized experiences, and protect user data across different sessions and interactions.
