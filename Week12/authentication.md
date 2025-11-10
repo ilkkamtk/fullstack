@@ -187,7 +187,7 @@ In web applications, authentication is typically done by verifying a username an
    def create_user():
        data = request.get_json()
        user = User(**data)
-       user = User.create_user(user)  # Uses hashed password internally
+       User.create_user(user)  # Uses hashed password internally
        return {"message": "user created successfully"}, 201
    ```
 
