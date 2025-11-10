@@ -326,13 +326,13 @@ In web applications, authentication is typically done by verifying a username an
 
 1. Continue your existing Flask app and create a branch `authentication`
 1. Implement user authentication to your app
-   - Add endpoint `POST /api/auth/login`
+   - Add endpoint `POST /api/v1/auth/login`
    - Use JWT for authentication
    - Continue adapting MVC pattern, use Flask Blueprints to modularize your routes for separate endpoints
 1. Implement authorization for protected routes, e.g.:
-   - `PUT /api/cats/:id` - only file owner can update cats
-   - `DELETE /api/cats/:id` - only file owner can delete cats
-   - `PUT /api/users/me` - users can update only their own user info
+   - `PUT /api/v1/cats/:id` - only file owner can update cats
+   - `DELETE /api/v1/cats/:id` - only file owner can delete cats
+   - `PUT /api/v1/users/me` - users can update only their own user info
    - and so on...
 1. Implement user roles (e.g. admin, user) with different permissions (role based resource authorization)
    - Regular users can only delete and edit their own data and cats, etc.
