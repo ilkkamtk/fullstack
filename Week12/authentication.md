@@ -105,6 +105,8 @@ sequenceDiagram
   - Data is only accessible on the client side and limited to about 5 MB.
 - Client-Side Frameworks and Libraries like React (with Context API or Redux), Angular (with services), Vue.js (with Vuex) provide their own mechanisms for maintaining state on the client side.
 
+[Simple practical frontend example of using JWT for authentication.](authentication-jsexample.md)
+
 ---
 
 ### Cookies and Sessions
@@ -135,8 +137,8 @@ For implementing **JSON Web Tokens (JWTs)**, you use standard Python packages:
 
 ## User Authentication and Authorization with JWT
 
-- **Authentication** is the process of verifying the identity of a user.
-- **Authorization** is the process of verifying that the user has access to the requested resource.
+- **Authentication** is the process of verifying the identity of a user. For example, checking if the username and password provided by the user match those stored in the database.
+- **Authorization** is the process of verifying that the user has access to the requested resource. For example, checking if the authenticated user has the necessary permissions to access a specific endpoint or perform a certain action.
 
 In web applications, authentication is typically done by verifying a username and password combination. Authorization is typically done by checking the user's role or permissions for the requested resource.
 
@@ -150,7 +152,46 @@ In web applications, authentication is typically done by verifying a username an
 
    - Use a long random string.
 
-3. Create a route `POST /api/v1/auth/login` that accepts a username and password in the request body.
+3. Modify the route for registering new users to hash the password before storing it in the database:
+
+   ```python
+    # File: models/users_model.py
+    import bcrypt
+    # ... other imports ...
+
+    class User:
+         # ... init ...
+
+         @staticmethod
+         def create_user(user):
+              """
+              Creates a new user with hashed password.
+              """
+              # 1. Generate salt and hash the password
+              salt = bcrypt.gensalt()
+              hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), salt)
+
+              # 2. Create and save the user object with hashed password
+              user = User(
+                username=user.username,
+                password=hashed_password.decode('utf-8'),
+                email=user.email
+              )
+              user.save()
+              return user
+   ```
+
+   - update the `users_controller.py` to use the new `create_user` method when registering users:
+
+   ```python
+   def create_user():
+       data = request.get_json()
+       user = User(**data)
+       user = User.create_user(user)  # Uses hashed password internally
+       return {"message": "user created successfully"}, 201
+   ```
+
+4. Create a route `POST /api/v1/auth/login` that accepts a username and password in the request body.
 
    - Add a route handler to the Blueprint file: `/api/v1/auth/auth_routes.py`.
 
@@ -165,7 +206,7 @@ In web applications, authentication is typically done by verifying a username an
        return jsonify(response), status_code
    ```
 
-4. In the _model_ implement a method for verifying the username and password combination and returning the user object if found:
+5. In the _model_ implement a method for verifying the username and password combination and returning the user object if found:
 
    ```python
    # File: models/users_model.py
@@ -191,7 +232,7 @@ In web applications, authentication is typically done by verifying a username an
            return None
    ```
 
-5. In the controller implement token generation for the logged in user, something like this:
+6. In the controller implement token generation for the logged in user, something like this:
 
    ```python
    # File: /api/v1/auth_controller.py
@@ -233,7 +274,7 @@ In web applications, authentication is typically done by verifying a username an
 
    - If the user is found, `jwt.encode()` is used to generate a JWT token. The token is sent back to the client along with the user object.
 
-6. Create a decorator for handling requests to endpoints where authentication is needed in the file `utils/auth_utils.py`.
+7. Create a decorator for handling requests to endpoints where authentication is needed in the file `utils/auth_utils.py`.
 
    - This function, typically named `token_required`, performs token extraction, validation (`jwt.decode()`), user lookup, and passes the user object to the route handler.
 
@@ -281,7 +322,7 @@ In web applications, authentication is typically done by verifying a username an
     return decorated
    ```
 
-7. Add a protected route handler that returns the authenticated user's object (single `/me` example):
+8. Add a protected route handler that returns the authenticated user's object (single `/me` example):
 
    ```python
    # File: blueprints/api/v1/auth_routes.py
@@ -301,7 +342,18 @@ In web applications, authentication is typically done by verifying a username an
    return UserSchema().dump(user), 200
    ```
 
-8. Test login and the protected route with VS Code REST Client:
+9. Test registering a new user and login and the protected route with VS Code REST Client:
+
+   ```http
+    ### Register new user
+    POST http://localhost:3000/api/v1/users
+    content-type: application/json
+    {
+      "username": "JohnDoe",
+      "password": "12345",
+      "email": "johndoe@example.com"
+    }
+   ```
 
    ```http
    ### Post login
@@ -310,7 +362,7 @@ In web applications, authentication is typically done by verifying a username an
 
    {
      "username": "JohnDoe",
-     "password": "2o48y5"
+     "password": "12345"
    }
    ```
 
@@ -324,9 +376,9 @@ In web applications, authentication is typically done by verifying a username an
 
    - or test with Postman (set 'Bearer Token' on the Authorization tab after successful login POST).
 
-9. Now you can use the authentication decorator with any protected route.
+10. Now you can use the authentication decorator with any protected route.
 
-   - Information about the authenticated user is passed to the route as the parameter `current_user` injected by `@token_required`.
+    - Information about the authenticated user is passed to the route as the parameter `current_user` injected by `@token_required`.
 
 ---
 
