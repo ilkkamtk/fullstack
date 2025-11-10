@@ -242,7 +242,7 @@ In web applications, authentication is typically done by verifying a username an
 
    - This function, typically named `token_required`, performs token extraction, validation (`jwt.decode()`), user lookup, and passes the user object to the route handler.
 
-   <!-- end list -->
+   - Use `functools.wraps` to prevent Flask endpoint-name collisions when the same decorator wraps multiple views (e.g. `/cats`, `/users`).
 
    ```python
    # File: utils/auth_utils.py
@@ -253,54 +253,50 @@ In web applications, authentication is typically done by verifying a username an
    from blueprints.api.v1.users.users_model import User
 
    def token_required(f):
-     """Decorator to require JWT token for protected routes."""
-     @wraps(f)
-     def decorated(*args, **kwargs):
-       auth_header = request.headers.get('Authorization', None)
-       if not auth_header:
-         return jsonify({'message': 'Authorization header is missing'}), 401
+   """Require JWT; inject `current_user` on success."""
 
-       parts = auth_header.split()
-       if parts[0].lower() != 'bearer' or len(parts) != 2:
-         return jsonify({'message': 'Authorization header must be in the format: Bearer <token>'}), 401
+        @wraps(f)  # preserve original function metadata
+        def decorated(*args, **kwargs):
+            auth = request.headers.get('Authorization')
+            if not auth:
+            return jsonify({'message': 'Authorization header is missing'}), 401
+            parts = auth.split()
+            if parts[0].lower() != 'bearer' or len(parts) != 2:
+            return jsonify({'message': 'Authorization header must be: Bearer <token>'}), 401
+            token = parts[1]
+            try:
+            payload = jwt.decode(token, current_app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
+            except ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired'}), 401
+            except InvalidTokenError:
+            return jsonify({'message': 'Invalid token'}), 401
+            user = User.objects(id=payload.get('user_id')).first()
+            if not user:
+            return jsonify({'message': 'User not found'}), 401
+            return f(current_user=user, *args, **kwargs)
 
-       token = parts[1]
-       try:
-         payload = jwt.decode(token, current_app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
-       except ExpiredSignatureError:
-         return jsonify({'message': 'Token has expired'}), 401
-       except InvalidTokenError:
-         return jsonify({'message': 'Invalid token'}), 401
-
-       user = User.objects(id=payload.get('user_id')).first()
-       if not user:
-         return jsonify({'message': 'User not found'}), 401
-
-       # Inject the user object into the wrapped route as `current_user`
-       return f(current_user=user, *args, **kwargs)
-
-     return decorated
+        return decorated
    ```
 
 7. Add a protected route handler that returns the authenticated user's object (single `/me` example):
 
-   ```python
-   # File: blueprints/api/v1/auth_routes.py
-   @auth_bp.route('/me', methods=['GET'])
-   @token_required
-   def me(current_user):
-     """Returns the authenticated user."""
-     # Controller function should return (payload, status_code)
-     response, status_code = get_current_user(current_user)
-     return jsonify(response), status_code
-   ```
+```python
+# File: blueprints/api/v1/auth_routes.py
+@auth_bp.route('/me', methods=['GET'])
+@token_required
+def me(current_user):
+  """Returns the authenticated user."""
+  # Controller function should return (payload, status_code)
+  response, status_code = get_current_user(current_user)
+  return jsonify(response), status_code
+```
 
-   ```python
-   # Controller (example)
-   def get_current_user(current_user):
-     user = User.objects.get(id=current_user.id)
-     return UserSchema().dump(user), 200
-   ```
+```python
+# Controller (example)
+def get_current_user(current_user):
+  user = User.objects.get(id=current_user.id)
+  return UserSchema().dump(user), 200
+```
 
 8. Test login and the protected route with VS Code REST Client:
 
