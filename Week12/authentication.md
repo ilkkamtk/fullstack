@@ -3,11 +3,11 @@
 ## Maintaining State in Web Applications
 
 In any realistic interactive Web application you will come across the need of retaining information between individual pages. This is referred to as "maintaining state" or as the "persistence of data". HTTP protocol does not support this — it is a _stateless_ protocol: every page request starts in a blank state with no knowledge of data that was available on the previous page. Since HTTP is stateless by nature, web applications need to implement their own methods for maintaining state. There are several common strategies to implement this on the server-side.
-Choosing the right method for maintaining state depends on the specific requirements of your application, such as the type of data being stored, security considerations, scalability, and whether the state is user-specific or shared across users. It's common to use a combination of these methods to address different aspects of application state.
+Choosing the right method for maintaining state depends on the specific requirements of your application, such as the type of data being stored, security considerations, scalability, and whether the state is user-specific or shared across users. It"s common to use a combination of these methods to address different aspects of application state.
 
 ### Cookies
 
-- Small pieces of data stored on the client's browser. Cookies are sent back to the server with every HTTP request.
+- Small pieces of data stored on the client"s browser. Cookies are sent back to the server with every HTTP request.
 - Cookies store variables as name and value pairs, plus additional information such as expiration time and the origin (domain) where the cookie came from.
 - By default a website can modify only its own cookies
 - Use Cases: Remembering user preferences, authentication tokens, tracking sessions.
@@ -99,7 +99,7 @@ sequenceDiagram
 ### Client-Side State Management
 
 - Web Storage API
-  - Local Storage: Stores data with no expiration date, and it's accessible across browser sessions.
+  - Local Storage: Stores data with no expiration date, and it"s accessible across browser sessions.
   - Session Storage: Similar to Local Storage but limited to a single session. The data is cleared when the page session ends.
   - Storing user data like settings, application state, and other temporary data that doesn’t need to persist long-term.
   - Data is only accessible on the client side and limited to about 5 MB.
@@ -115,14 +115,14 @@ Flask provides built-in support for cookies and sessions:
 
 - **Cookies:**
 
-  - To **read** a cookie, access the `request.cookies` dictionary: `request.cookies.get('cookie_name')`.
-  - To **set** a cookie, use the `response` object's `set_cookie` method before returning the response: `response.set_cookie('cookie_name', 'value')`. You'll need to make the response first, e.g., `response = make_response(render_template(...))`.
+  - To **read** a cookie, access the `request.cookies` dictionary: `request.cookies.get("cookie_name")`.
+  - To **set** a cookie, use the `response` object"s `set_cookie` method before returning the response: `response.set_cookie("cookie_name", "value")`. You"ll need to make the response first, e.g., `response = make_response(render_template(...))`.
 
 - **Sessions:** Flask comes with a built-in, secure **session object** . This is the most common and recommended way to manage state.
-  - The session data is stored in a **client-side cookie** that is cryptographically **signed** by the server's `SECRET_KEY` to prevent tampering.
+  - The session data is stored in a **client-side cookie** that is cryptographically **signed** by the server"s `SECRET_KEY` to prevent tampering.
   - You access the session like a dictionary:
-    - To **set** a value: `session['key'] = 'value'`
-    - To **get** a value: `user_id = session.get('user_id')`
+    - To **set** a value: `session["key"] = "value"`
+    - To **get** a value: `user_id = session.get("user_id")`
   - **Note:** You must set a `SECRET_KEY` in your application configuration for sessions to work securely.
 
 ---
@@ -140,7 +140,7 @@ For implementing **JSON Web Tokens (JWTs)**, you use standard Python packages:
 - **Authentication** is the process of verifying the identity of a user. For example, checking if the username and password provided by the user match those stored in the database.
 - **Authorization** is the process of verifying that the user has access to the requested resource. For example, checking if the authenticated user has the necessary permissions to access a specific endpoint or perform a certain action.
 
-In web applications, authentication is typically done by verifying a username and password combination. Authorization is typically done by checking the user's role or permissions for the requested resource.
+In web applications, authentication is typically done by verifying a username and password combination. Authorization is typically done by checking the user"s role or permissions for the requested resource.
 
 1. Install required packages
 
@@ -169,12 +169,12 @@ In web applications, authentication is typically done by verifying a username an
               """
               # 1. Generate salt and hash the password
               salt = bcrypt.gensalt()
-              hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), salt)
+              hashed_password = bcrypt.hashpw(user.password.encode("utf-8"), salt)
 
               # 2. Create and save the user object with hashed password
               user = User(
                 username=user.username,
-                password=hashed_password.decode('utf-8'),
+                password=hashed_password.decode("utf-8"),
                 email=user.email
               )
               user.save()
@@ -198,12 +198,12 @@ In web applications, authentication is typically done by verifying a username an
    - The route handler calls the controller method `post_login`, passing the request data.
 
    ```python
+   from api.v1.auth.auth_controller import post_login
+
    # File: /api/v1/auth/auth_routes.py
-   @auth_bp.route('/login', methods=['POST'])
+   @auth_bp.route("/login", methods=["POST"])
    def login():
-       data = request.get_json()
-       response, status_code = post_login(data)
-       return jsonify(response), status_code
+       return post_login()
    ```
 
 5. In the _model_ implement a method for verifying the username and password combination and returning the user object if found:
@@ -226,50 +226,50 @@ In web applications, authentication is typically done by verifying a username an
            user = User.objects(username=username).first()
 
            # 2. If user exists, verify password hash using bcrypt
-           if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+           if user and bcrypt.checkpw(password.encode("utf-8"), user.password.encode("utf-8")):
                return user
 
            return None
    ```
 
-6. In the controller implement token generation for the logged in user, something like this:
+6. In the controller implement token generation for the logged in user:
 
    ```python
    # File: /api/v1/auth_controller.py
+   from flask import request
    import jwt
-   import datetime
+   from datetime import datetime, timezone, timedelta
    import os
    from models.users_model import User
 
-   def post_login(data):
+   def post_login():
+       data = request.get_json()
        # ... credential check ...
-       username = data.get('username')
-       password = data.get('password')
+       username = data.get("username")
+       password = data.get("password")
        user = User.verify_credentials(username, password) # Uses bcrypt check internally
 
        if user:
-           jwt_secret = os.getenv('JWT_SECRET_KEY', 'fallback-jwt-secret')
+           jwt_secret = os.getenv("JWT_SECRET_KEY", "fallback-jwt-secret")
 
            # 1. Create the payload with expiration time
            payload = {
-               'user_id': str(user.id),
-               'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24), # 24h expiration
-               'iat': datetime.datetime.utcnow()
+            "user_id": str(user.id),
+            "username": user.username,
+            "exp": datetime.now(timezone.utc) + timedelta(hours=24)  # Token expires in 24 hours
            }
 
            # 2. Encode the token
-           token = jwt.encode(payload, jwt_secret, algorithm='HS256')
+           token = jwt.encode(payload, jwt_secret, algorithm="HS256")
 
            # 3. Return the user data and the token
            return {
-               'id': str(user.id),
-               'username': user.username,
-               'email': user.email,
-               'role': user.role,
-               'token': token
-           }, 200
+                "message": "Login successful",
+                "user": UserSchema().dump(user),
+                "token": token
+            }, 200
        else:
-           return {'message': 'Invalid credentials'}, 401
+           return {"message": "Invalid credentials"}, 401
    ```
 
    - If the user is found, `jwt.encode()` is used to generate a JWT token. The token is sent back to the client along with the user object.
@@ -293,40 +293,40 @@ In web applications, authentication is typically done by verifying a username an
 
         @wraps(f)  # preserve original function metadata
         def decorated(*args, **kwargs):
-            auth = request.headers.get('Authorization')
+            auth = request.headers.get("Authorization")
 
             if not auth:
-                return jsonify({'message': 'Authorization header is missing'}), 401
+                return jsonify({"message": "Authorization header is missing"}), 401
 
             parts = auth.split()
 
-            if parts[0].lower() != 'bearer' or len(parts) != 2:
-                return jsonify({'message': 'Authorization header must be: Bearer <token>'}), 401
+            if parts[0].lower() != "bearer" or len(parts) != 2:
+                return jsonify({"message": "Authorization header must be: Bearer <token>"}), 401
 
             token = parts[1]
 
             try:
-                payload = jwt.decode(token, current_app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
+                payload = jwt.decode(token, current_app.config.get("JWT_SECRET_KEY"), algorithms=["HS256"])
             except ExpiredSignatureError:
-                return jsonify({'message': 'Token has expired'}), 401
+                return jsonify({"message": "Token has expired"}), 401
             except InvalidTokenError:
-                return jsonify({'message': 'Invalid token'}), 401
+                return jsonify({"message": "Invalid token"}), 401
 
-            user = User.objects(id=payload.get('user_id')).first()
+            user = User.objects(id=payload.get("user_id")).first()
 
             if not user:
-                return jsonify({'message': 'User not found'}), 401
+                return jsonify({"message": "User not found"}), 401
 
             return f(current_user=user, *args, **kwargs)
 
     return decorated
    ```
 
-8. Add a protected route handler that returns the authenticated user's object (single `/me` example):
+8. Add a protected route handler that returns the authenticated user"s object (single `/me` example):
 
    ```python
    # File: blueprints/api/v1/auth_routes.py
-   @auth_bp.route('/me', methods=['GET'])
+   @auth_bp.route("/me", methods=["GET"])
    @token_required
    def me(current_user):
    """Returns the authenticated user."""
@@ -374,7 +374,7 @@ In web applications, authentication is typically done by verifying a username an
    Authorization: Bearer <put-your-token-from-login-response-here>
    ```
 
-   - or test with Postman (set 'Bearer Token' on the Authorization tab after successful login POST).
+   - or test with Postman (set "Bearer Token" on the Authorization tab after successful login POST).
 
 10. Now you can use the authentication decorator with any protected route.
 
