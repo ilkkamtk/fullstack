@@ -226,7 +226,7 @@ In web applications, authentication is typically done by verifying a username an
            user = User.objects(username=username).first()
 
            # 2. If user exists, verify password hash using bcrypt
-           if user and bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
+           if user and bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
                return user
 
            return None
