@@ -150,14 +150,14 @@ In web applications, authentication is typically done by verifying a username an
 
    - Use a long random string.
 
-3. Create a route `POST /api/auth/login` that accepts a username and password in the request body.
+3. Create a route `POST /api/v1/auth/login` that accepts a username and password in the request body.
 
-   - Add a route handler to the Blueprint file: `blueprints/api/v1/auth_routes.py`.
+   - Add a route handler to the Blueprint file: `/api/v1/auth/auth_routes.py`.
 
    - The route handler calls the controller method `post_login`, passing the request data.
 
    ```python
-   # File: blueprints/api/v1/auth_routes.py
+   # File: /api/v1/auth/auth_routes.py
    @auth_bp.route('/login', methods=['POST'])
    def login():
        data = request.get_json()
@@ -168,7 +168,7 @@ In web applications, authentication is typically done by verifying a username an
 4. In the _model_ implement a method for verifying the username and password combination and returning the user object if found:
 
    ```python
-   # File: blueprints/api/v1/users/users_model.py
+   # File: models/users_model.py
    import bcrypt
    # ... other imports ...
 
@@ -194,11 +194,11 @@ In web applications, authentication is typically done by verifying a username an
 5. In the controller implement token generation for the logged in user, something like this:
 
    ```python
-   # File: blueprints/api/v1/auth_controller.py
+   # File: /api/v1/auth_controller.py
    import jwt
    import datetime
    import os
-   from blueprints.api.v1.users.users_model import User
+   from models.users_model import User
 
    def post_login(data):
        # ... credential check ...
@@ -245,32 +245,40 @@ In web applications, authentication is typically done by verifying a username an
    from flask import request, jsonify, current_app
    import jwt
    from jwt import ExpiredSignatureError, InvalidTokenError
-   from blueprints.api.v1.users.users_model import User
+   from models.users_model import User
 
    def token_required(f):
-   """Require JWT; inject `current_user` on success."""
+    """Require JWT; inject `current_user` on success."""
 
         @wraps(f)  # preserve original function metadata
         def decorated(*args, **kwargs):
             auth = request.headers.get('Authorization')
+
             if not auth:
-            return jsonify({'message': 'Authorization header is missing'}), 401
+                return jsonify({'message': 'Authorization header is missing'}), 401
+
             parts = auth.split()
+
             if parts[0].lower() != 'bearer' or len(parts) != 2:
-            return jsonify({'message': 'Authorization header must be: Bearer <token>'}), 401
+                return jsonify({'message': 'Authorization header must be: Bearer <token>'}), 401
+
             token = parts[1]
+
             try:
-            payload = jwt.decode(token, current_app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
+                payload = jwt.decode(token, current_app.config.get('JWT_SECRET_KEY'), algorithms=['HS256'])
             except ExpiredSignatureError:
-            return jsonify({'message': 'Token has expired'}), 401
+                return jsonify({'message': 'Token has expired'}), 401
             except InvalidTokenError:
-            return jsonify({'message': 'Invalid token'}), 401
+                return jsonify({'message': 'Invalid token'}), 401
+
             user = User.objects(id=payload.get('user_id')).first()
+
             if not user:
-            return jsonify({'message': 'User not found'}), 401
+                return jsonify({'message': 'User not found'}), 401
+
             return f(current_user=user, *args, **kwargs)
 
-        return decorated
+    return decorated
    ```
 
 7. Add a protected route handler that returns the authenticated user's object (single `/me` example):
