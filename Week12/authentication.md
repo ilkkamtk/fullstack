@@ -33,19 +33,6 @@ sequenceDiagram
 - Can be used for user authentication and storing for user-specific data while the user navigates the application.
 - Requires server resources and proper management to ensure scalability and security.
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Server
-    Client->>Server: HTTP Request (initial visit)
-    Note over Server: Server decides to set a cookie
-    Server->>Client: HTTP Response with Set-Cookie header
-    Note over Client: Client stores the cookie
-    Client->>Server: Subsequent HTTP Request with cookie
-    Note over Server: Server reads cookie and personalizes response
-    Server->>Client: Personalized HTTP Response
-```
-
 ### URL Parameters and Query Strings
 
 - Passing state information in URLs as query strings. For example: `https://example.com/app?user=johndoe&theme=dark`.
