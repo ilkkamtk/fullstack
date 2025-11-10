@@ -85,7 +85,7 @@ sequenceDiagram
   Client->>Server: HTTP Request with Credentials (login)
   Note over Server: Validates credentials and creates/signs JWT
   Server->>Client: HTTP Response with JWT
-  Note over Client: Stores JWT (usually in memory)
+  Note over Client: Stores JWT (e.g., in localStorage or memory)
 
   Client->>Server: Subsequent HTTP Request with JWT in header
   Note over Server: Verifies JWT
@@ -275,23 +275,23 @@ In web applications, authentication is typically done by verifying a username an
 
 7. Add a protected route handler that returns the authenticated user's object (single `/me` example):
 
-```python
-# File: blueprints/api/v1/auth_routes.py
-@auth_bp.route('/me', methods=['GET'])
-@token_required
-def me(current_user):
-  """Returns the authenticated user."""
-  # Controller function should return (payload, status_code)
-  response, status_code = get_current_user(current_user)
-  return jsonify(response), status_code
-```
+   ```python
+   # File: blueprints/api/v1/auth_routes.py
+   @auth_bp.route('/me', methods=['GET'])
+   @token_required
+   def me(current_user):
+   """Returns the authenticated user."""
+   # Controller function should return (payload, status_code)
+   response, status_code = get_current_user(current_user)
+   return jsonify(response), status_code
+   ```
 
-```python
-# Controller (example)
-def get_current_user(current_user):
-  user = User.objects.get(id=current_user.id)
-  return UserSchema().dump(user), 200
-```
+   ```python
+   # Controller (example)
+   def get_current_user(current_user):
+   user = User.objects.get(id=current_user.id)
+   return UserSchema().dump(user), 200
+   ```
 
 8. Test login and the protected route with VS Code REST Client:
 

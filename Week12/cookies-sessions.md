@@ -1,8 +1,8 @@
-## Cookies and Sessions in Depth
+# Cookies and Sessions
 
 To effectively manage application state, understanding cookies and sessions is crucial. Here's an in-depth look at both:
 
-### Cookies
+## Cookies
 
 - **Definition:** Small pieces of data sent from the server and stored on the client's browser. They are included in every HTTP request to the same server.
 - **Storage Location:** Client-side (in the user's browser).
@@ -23,7 +23,7 @@ To effectively manage application state, understanding cookies and sessions is c
   | Supported by all browsers             | Privacy concerns               |
   | Can be made secure (HttpOnly, Secure) | Can be disabled by the user    |
 
-### Sessions
+## Sessions
 
 - **Definition:** Server-side storage of user data, with a unique session identifier sent to the client.
 - **Storage Location:** Server-side (on the web server), with the session ID stored client-side (usually in a cookie).
