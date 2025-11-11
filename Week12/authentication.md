@@ -283,7 +283,8 @@ In web applications, authentication is typically done by verifying a username an
    ```python
    # File: utils/auth_utils.py
    from functools import wraps
-   from flask import request, jsonify, current_app
+   from flask import request, jsonify
+   import os
    import jwt
    from jwt import ExpiredSignatureError, InvalidTokenError
    from models.users_model import User
@@ -306,7 +307,7 @@ In web applications, authentication is typically done by verifying a username an
             token = parts[1]
 
             try:
-                payload = jwt.decode(token, current_app.config.get("JWT_SECRET_KEY"), algorithms=["HS256"])
+                payload = jwt.decode(token, os.getenv("JWT_SECRET_KEY"), algorithms=["HS256"])
             except ExpiredSignatureError:
                 return jsonify({"message": "Token has expired"}), 401
             except InvalidTokenError:
@@ -326,13 +327,12 @@ In web applications, authentication is typically done by verifying a username an
 
    ```python
    # File: blueprints/api/v1/users/users_routes.py
-   @auth_bp.route("/me", methods=["GET"])
+   @users_bp.get("/me")
    @token_required
    def me(current_user):
         """Returns the authenticated user."""
         # Controller function should return (payload, status_code)
-        response, status_code = get_current_user(current_user)
-        return jsonify(response), status_code
+        return get_current_user(current_user)
    ```
 
    ```python
