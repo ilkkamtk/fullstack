@@ -64,8 +64,8 @@
 
 ### Week 12
 
-- Authentication and Authorization with decorators
-- File upload handling
+- [Authentication and Authorization with decorators](Week12/authentication.md)
+- [File upload handling](Week12/file-upload.md)
 
 ### Week 13
 
