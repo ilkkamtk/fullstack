@@ -322,24 +322,24 @@ In web applications, authentication is typically done by verifying a username an
     return decorated
    ```
 
-8. Add a protected route handler that returns the authenticated user"s object (single `/me` example):
+8. Add a protected route handler that returns the authenticated user"s object (single `/api/v1/users/me` example):
 
    ```python
-   # File: blueprints/api/v1/auth_routes.py
+   # File: blueprints/api/v1/users/users_routes.py
    @auth_bp.route("/me", methods=["GET"])
    @token_required
    def me(current_user):
-   """Returns the authenticated user."""
-   # Controller function should return (payload, status_code)
-   response, status_code = get_current_user(current_user)
-   return jsonify(response), status_code
+        """Returns the authenticated user."""
+        # Controller function should return (payload, status_code)
+        response, status_code = get_current_user(current_user)
+        return jsonify(response), status_code
    ```
 
    ```python
    # Controller (example)
    def get_current_user(current_user):
-   user = User.objects.get(id=current_user.id)
-   return UserSchema().dump(user), 200
+        user = User.objects.get(id=current_user.id)
+        return UserSchema().dump(user), 200
    ```
 
 9. Test registering a new user and login and the protected route with VS Code REST Client:
@@ -370,7 +370,7 @@ In web applications, authentication is typically done by verifying a username an
 
    ```http
    ### Get my user info
-   GET http://localhost:3000/api/auth/me
+   GET http://localhost:3000/api/v1/users/me
    Authorization: Bearer <put-your-token-from-login-response-here>
    ```
 
@@ -385,8 +385,10 @@ In web applications, authentication is typically done by verifying a username an
 ## Assignment
 
 1. Continue your existing Flask app and create a branch `authentication`
-1. Implement user authentication to your app
-   - Add endpoint `POST /api/v1/auth/login`
+1. Implement user registration and authentication to your app
+   - Add endpoint `POST /api/v1/users` for registering new users
+   - Add endpoint `POST /api/v1/auth/login` for logging in users
+   - Add endpoint `GET /api/v1/users/me` for getting the authenticated user info
    - Use JWT for authentication
    - Continue adapting MVC pattern, use Flask Blueprints to modularize your routes for separate endpoints
 1. Implement authorization for protected routes, e.g.:
