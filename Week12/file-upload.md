@@ -20,8 +20,8 @@ Handling file uploads is a common requirement in web applications. Flask provide
    app = Flask(__name__)
 
    # Configure upload folder and allowed extensions
-   # use 'public' because it is served by default
-   UPLOAD_FOLDER = 'public/'
+   # use 'static' because it is served by default
+   UPLOAD_FOLDER = 'static/uploads/'
    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf', 'txt'}
 
    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -58,14 +58,17 @@ Handling file uploads is a common requirement in web applications. Flask provide
            # Check if the post request has the file part
            if 'file' not in request.files:
                return 'No file part', 400
+
            file = request.files['file']
            # If user does not select file, browser may submit an empty part
            if file.filename == '':
                return 'No selected file', 400
+
            if file and allowed_file(file.filename):
                filename = unique_filename(file.filename)
-               file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+               file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                return 'File successfully uploaded', 200
+
        # For GET request, render upload form
        return '''
          <form method="post" enctype="multipart/form-data">
@@ -86,7 +89,7 @@ Handling file uploads is a common requirement in web applications. Flask provide
    - Start your Flask application.
    - Navigate to `http://localhost:5000/upload` in your web browser.
    - Use the form to select and upload a file.
-   - Verify that the file is saved in the `uploads/` directory on your server.
+   - Verify that the file is saved in the `static/uploads/` directory on your server.
 
 ## Important Considerations
 
