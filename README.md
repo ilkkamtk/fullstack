@@ -67,15 +67,13 @@
 - [Authentication and Authorization with decorators](Week12/authentication.md)
 - [File upload handling](Week12/file-upload.md)
 
-### Week 13
+### Week 13 - 14
 
-- Input validation server
-- Input validation client
-
-### Week 14
-
-- Security best practices
-- Deployment
+- [Input validation](Week13/validation.md)
+  - [Server side validation](Week13/mongoengine-validation.md)
+  - [Client side validation](Week13/client-side-validation.md)
+- [Security best practices](Week13/security.md)
+- [Deployment](week8/ecloud-installation.md)
 
 ### Week 15
 

@@ -5,7 +5,6 @@
 - Built-in type casting, validation, query building, signals (hooks), etc.
 - Methods return querysets or objects that can be used synchronously with Flask.
 
-
 Install mongoengine dependency with command `pip install mongoengine` and the update the requirements.txt with `pip list --not-required --format freeze > requirements.txt`
 
 ---
@@ -274,7 +273,7 @@ def create_cat():
 
 ## Class Methods
 
-In MongoEngine, you can add **class methods** to models.
+In MongoEngine, you can add **class methods** to models. Class methods are methods that are bound to the class and not the instance of the class. They can be used to define custom queries or operations related to the model. They always receive the class (`cls`) as the first argument instead of the instance (`self`). `cls` is used to access class-level attributes and methods like querying the database.
 
 ### Example: Find Cats by Owner
 
@@ -332,6 +331,20 @@ Example request body:
   ],
   "type": "Polygon"
 }
+```
+
+---
+
+## Static Methods
+
+Static methods do not receive an implicit first argument (neither `self` nor `cls`). They behave like regular functions but belong to the class's namespace. They are defined using the `@staticmethod` decorator. They are useful for utility functions that have some logical connection to the class but do not need to access class or instance data. For example, a static method to check if a user exists by email:
+
+```python
+class User(Document):
+    # fields...
+    @staticmethod
+    def email_exists(email):
+        return User.objects(email=email).first() is not None
 ```
 
 ---
