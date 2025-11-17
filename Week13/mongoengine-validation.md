@@ -6,7 +6,7 @@ When using MongoEngine, you can leverage its [built-in validation features](http
 
 You can define validation rules directly in your document schema by using field options and custom validation methods. For example:
 
-```pythonpython
+```python
 from mongoengine import Document, StringField, IntField, ValidationError
 class User(Document):
     username = StringField(required=True, min_length=3, max_length=50)
