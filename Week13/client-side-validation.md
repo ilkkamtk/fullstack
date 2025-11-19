@@ -139,5 +139,4 @@ When validation fails, it's important to provide clear feedback to users. You ca
 }
 ```
 
-
-Note: Client side validation should not be the only way to validate the correctness of user data. Backend must always validate the data, as HTTP requests can be sent by clients than browser.
+Note: Client side validation should not be the only way to validate the correctness of user data. Backend must always validate the data, as HTTP requests can be sent by other clients than browser.
