@@ -24,7 +24,7 @@ In this example:
 - The `username` field is required and must be between 3 and 50 characters long.
 - The `email` field is required and must be unique.
 - The `age` field must be a non-negative integer.
-- The `clean` method provides custom validation to ensure the email contains an "@" symbol.
+- The `clean` method provides custom validation to ensure the email contains an "@" symbol. Clean methods are called automatically before saving or updating documents.
 
 ## Handling Validation Errors
 
@@ -50,7 +50,7 @@ from mongoengine import Document, StringField, ValidationError, signals
 
 class User(Document):
     email = StringField(required=True, unique=True)
-    password = StringField(required=True, validation=validate_password)
+    password = StringField(required=True)
 
     @staticmethod
     def validate_password(password):
@@ -107,6 +107,56 @@ In this example, the `validate_password` function checks that the password meets
 pip install blinker
 ```
 
+---
+
+### Tip on error message handling
+
+Since Pythons error handling is annoying, e.g in this case ValidationError's output is different depending on where it is raised, you can create a helper function to extract error messages in a consistent way:
+
+```python
+# utils/simple_errors.py
+from functools import wraps
+from mongoengine import ValidationError
+
+def simple_errors(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except ValidationError as e:
+            # e.to_dict() gives field-level messages
+            errors = e.to_dict()  # e.g. {'__all__': 'Password is required'}
+            if errors:
+                errors = e.to_dict()  # dict like {'__all__': 'Invalid email', 'username': 'Field is required'}
+                messages = []
+
+                for field, msg in errors.items():
+                    if field == "__all__":
+                        messages.append(msg)  # document-level error
+                    else:
+                        messages.append(f"{msg}: {field}")  # field-level error with field name
+
+                return {"errors": messages}, 400
+            else:
+                # fallback: str(e)
+                msg = str(e)
+            return {"error": msg}, 400
+        except Exception as e:
+            return {"error": str(e)}, 500
+    return wrapper
+```
+
+Usage in controllers:
+
+```python
+from utils.simple_errors import simple_errors
+@simple_errors
+def create_user():
+    etc...
+```
+
+---
+
 ## Assignment
 
 1. Continue your existing Flask app and create a branch `validation`.
@@ -120,13 +170,13 @@ pip install blinker
        - created_at: DateTimeField, automatically set to the current date and time when the user is created
      - Cats:
        - cat_name: StringField, required, min length 2, max length 30
-       - birthdate: DateField, required, must be a valid date in the past
+       - birthdate: DateField, required
        - weight: FloatField, required
        - location: PointField, required
        - owner: ReferenceField to User, required
-       - attributes: DictField, optional, keys and values must be strings
-3. Ensure that your Flask routes handle `ValidationError` exceptions appropriately, returning meaningful error messages to the client.
+       - attributes: DictField, optional
+3. Ensure that your Flask routes handle `ValidationError` and other exceptions appropriately, returning meaningful error messages to the client. Use `Exception` for general errors and `ValidationError` for validation-specific errors.
 4. Test your validation logic by attempting to create and update documents with both valid and invalid data.
-5. Add endpoints `/api/v1/users/check/:email` and `/api/v1/users/check/:username` to check if an email or username is already in use. Enpoints should return JSON like `{ "exists": true }` or `{ "exists": false }`.
+5. Add endpoints `/api/v1/users/check/email/:email` and `/api/v1/users/check/username/:username` to check if an email or username is already in use. Enpoints should return JSON like `{ "exists": true }` or `{ "exists": false }`.
 6. Commit and push your changes to the `validation` branch.
 7. Create a pull request to merge the `validation` branch into `main` and request feedback from Copilot in GitHub.
