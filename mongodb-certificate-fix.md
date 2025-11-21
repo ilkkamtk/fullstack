@@ -5,6 +5,7 @@ These options might or might not work.
 Remove .venv and recreate it
 ```
 rm -rf .venv
+pip install -r requirements.txt
 python3 -m venv .venv
 source .venv/bin/activate
 ```
