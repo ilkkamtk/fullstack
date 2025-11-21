@@ -335,12 +335,12 @@ def token_required(f):
         return get_current_user(current_user)
    ```
 
-   ```python
-   # Controller (example)
-   def get_current_user(current_user):
-        user = User.objects.get(id=current_user.id)
-        return UserSchema().dump(user), 200
-   ```
+```python
+# Controller (example)
+def get_current_user(current_user):
+    user = User.objects.get(id=current_user.id)
+    return user.to_json(), 200
+```
 
 9. Test registering a new user and login and the protected route with VS Code REST Client:
 
